@@ -12,7 +12,7 @@
 set -euxEo pipefail
 
 # In case of failure
-trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --stage Calibrate --status Failed --note \"Failed during calibration\""' ERR
+trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during calibration\""' ERR
 
 # Load relevant modules
 module use /pawsey/mwa/software/python3/modulefiles
@@ -24,7 +24,7 @@ mkdir {{obsid}}
 cd {{obsid}}/
 
 # Update database to set observation to processing
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --stage Calibrate --slurm $SLURM_JOB_ID --status Processing -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status Processing -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
 
 command -V hyperdrive
 
@@ -57,4 +57,4 @@ rsync -av {{obsid}}_sols.fits \
 		{{pipeline_dir}}/{{year}}/{{obsid}}/
 
 # Update database to show that observation has finished successfully
-ssh mwa-solar "python3 {{DB_dir}}/dp_update_log.py -o {{obsid}} --stage Calibrate --status Done -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/dp_update_log.py -o {{obsid}} --status Done -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
