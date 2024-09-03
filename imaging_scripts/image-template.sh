@@ -13,7 +13,7 @@
 set -euxEo pipefail
 
 # In case of failure
-trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log_image.sqlite --status Failed --note \"Failed during imaging\""' ERR
+trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during imaging\""' ERR
 
 # Load relevant modules
 module use /pawsey/mwa/software/python3/modulefiles
@@ -89,4 +89,4 @@ date -Iseconds
 #rm -rf /astro/mwasci/asvo/{{asvo}}/* 
 date -Iseconds
 
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log_image.sqlite" || echo "Log file update failed}"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed}"
