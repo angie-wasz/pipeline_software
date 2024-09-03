@@ -3,7 +3,7 @@
 #SBATCH --output={{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}-post-image.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
-#SBATCH --time=05:00:00
+#SBATCH --time=01:00:00
 #SBATCH --clusters=garrawarla
 #SBATCH --partition=workq
 #SBATCH --account=mwasci
@@ -33,6 +33,8 @@ trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_di
 
 # Move to the temporary working directory on the NVMe
 cd {{tmp_dir}}
+mkdir {{obsid}}
+cd {{obsid}}/
 #cp {{pipeline_dir}}/pipeline_scripts/* .
 cp /software/projects/mwasci/awaszewski/pipeline_scripts/* ./
 
@@ -99,7 +101,7 @@ export PATH=$mypath
 export PYTHONPATH=$mypythonpath
 
 #singularity exec -B $PWD {{container}} BANE --noclobber --compress {{obsid}}_{{freq}}_image_moment2.fits
-singularity exec -B $PWD {{container}} BANE {{obsid}}_{{freq}}_image_moment2.fits
+singularity exec -B $PWD {{container}} BANE --cores 1 {{obsid}}_{{freq}}_image_moment2.fits
 singularity exec -B $PWD {{container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}_image_moment2.vot {{obsid}}_{{freq}}_image_moment2.fits
 
 python3 make_beam_only.py {{obsid}}.hdf5 {{obsid}}_beam.hdf5 -f 121-132
@@ -121,4 +123,5 @@ date -Iseconds
 
 # Update database to show that observation has finished processing
 # ssh mwa-solar "export DB_FILE={{DB_dir}}/log.sqlite; python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -s Completed" || echo "Log file update failed"
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log_image.sqlite" || echo "Log file update failed}"	
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log_image.sqlite" || echo "Log file update failed}"
+
