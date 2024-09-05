@@ -1,4 +1,5 @@
-#SBATCH --job-name=ips-calibrate-{{obsid}}
+#!/bin/bash -l
+#SBATCH --job-name={{obsid}}-ips-calibrate
 #SBATCH --output={{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}-calibrate.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
@@ -12,7 +13,7 @@
 set -euxEo pipefail
 
 # In case of failure
-trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during calibration\""' ERR
+#trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during calibration\""' ERR
 
 # Load relevant modules
 module use /pawsey/mwa/software/python3/modulefiles
@@ -24,7 +25,7 @@ mkdir {{obsid}}
 cd {{obsid}}/
 
 # Update database to set observation to processing
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status Processing -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
+#ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status Processing -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
 
 command -V hyperdrive
 
@@ -37,10 +38,10 @@ date -Iseconds
 cp /software/projects/mwasci/awaszewski/pipeline_scripts/aocal* ./
 
 # Obtain sky model, probably on mwa-solar, move it over to garra at beginning
-cp {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}_skymodel.txt ./
+cp {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}_skymodel.fits ./
 
 # Calibration
-hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits {{obsid}}_skymodel.txt --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
+hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits {{obsid}}_skymodel.fits --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
 
 # Plot solutions
 hyperdrive plot-solutions {{obsid}}_sols.fits
@@ -57,4 +58,4 @@ rsync -av {{obsid}}_sols.fits \
 		{{pipeline_dir}}/{{year}}/{{obsid}}/
 
 # Update database to show that observation has finished successfully
-ssh mwa-solar "python3 {{DB_dir}}/dp_update_log.py -o {{obsid}} --status Done -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
+#ssh mwa-solar "python3 {{DB_dir}}/dp_update_log.py -o {{obsid}} --status Done -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"

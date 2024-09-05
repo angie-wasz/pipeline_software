@@ -4,7 +4,7 @@ pipeline_dir: /scratch/mwasci/awaszewski/pipeline/
 metafits_dir: /scratch/mwasci/awaszewski/pipeline/
 DB_dir: /data/awaszewski/ips/db/
 n_core: 38
-year: 2022
+year: 2023
 aocal: 16
 files162: "{057..068}"
 freq: 121-132

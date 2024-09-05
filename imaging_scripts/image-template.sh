@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH --job-name=ips-image-{{obsid}}
+#SBATCH --job-name={{obsid}}-ips-image
 #SBATCH --output={{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}-image.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
@@ -23,11 +23,13 @@ module load python scipy astropy h5py
 
 # Move to the temporary working directory on the NVMe
 cd {{tmp_dir}}
+mkdir {{obsid}}
+cd {{obsid}}/
 # copy across files for later
 cp /software/projects/mwasci/awaszewski/imstack/* ./
 
 # Update database to set observation to processing
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status "Processing" -l {{DB_dir}}/log_image.sqlite" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status "Processing" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
 #ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status Processing -l {{DB_dir}}/log_image.sqlite" || echo "Log file update failed"
 
 # Move ms onto nvme

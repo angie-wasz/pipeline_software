@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH --job-name=ips-post-image-{{obsid}}
+#SBATCH --job-name={{obsid}}-ips-post-image
 #SBATCH --output={{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}-post-image.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
