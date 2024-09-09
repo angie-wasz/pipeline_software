@@ -6,7 +6,7 @@ DB_dir: /data/awaszewski/ips/db/
 n_core: 38
 year: 2023
 aocal: 16
-files162: "{057..068}"
+files162: "{121..132}"
 freq: 121-132
 pols:
         - XX

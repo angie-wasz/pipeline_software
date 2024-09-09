@@ -17,7 +17,7 @@ set -euxEo pipefail
 
 # Load relevant modules
 module use /pawsey/mwa/software/python3/modulefiles
-module load hyperdrive singularity
+module load hyperdrive/v0.2.1 singularity
 
 # Move onto temporary working directory on NVMe
 cd {{tmp_dir}}
@@ -38,10 +38,10 @@ date -Iseconds
 cp /software/projects/mwasci/awaszewski/pipeline_scripts/aocal* ./
 
 # Obtain sky model, probably on mwa-solar, move it over to garra at beginning
-cp {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}_skymodel.fits ./
+cp {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}_skymodel.* ./
 
 # Calibration
-hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits {{obsid}}_skymodel.fits --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
+hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits {{obsid}}_skymodel.txt --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
 
 # Plot solutions
 hyperdrive plot-solutions {{obsid}}_sols.fits

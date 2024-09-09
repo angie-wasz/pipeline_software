@@ -40,14 +40,13 @@ mv {{obsid}}_ch121-132.ms {{obsid}}{{freq}}.ms
 date -Iseconds
 
 # Locate metafits file
-#if [ ! -s /astro/mwasci/jmorgan/ips/metafits/{{obsid}}.metafits ]; then
-#    echo downloading {{obsid}} metafits
-#    wget "http://ws.mwatelescope.org/metadata/fits?obs_id={{obsid}}" -qO {{obsid}}.metafits
-#else
-#    cp /astro/mwasci/jmorgan/ips/metafits/{{obsid}}.metafits .
-#fi
-wget "http://ws.mwatelescope.org/metadata/fits?obs_id={{obsid}}" -qO {{obsid}}.metafits
-rsync -av {{obsid}}.metafits {{pipeline_dir}}/{{year}}/{{obsid}}/
+if [ ! -s {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}.metafits ]; then
+	echo "Downloading {{obsid}} metafits"
+	wget "http://ws.mwatelescope.org/metadata/fits?obs_id={{obsid}}" -qO {{obsid}}.metafits
+else
+	cp {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}.metafits ./
+	rsync -av {{obsid}}.metafits {{pipeline_dir}}/{{year}}/{{obsid}}/
+fi
 
 # Copy calibration solutions
 #rsync -a mwa-solar:/data/awaszewski/ips/feb_cme/2023/cal_sols/{{obsid}}_160.bin ./
@@ -91,4 +90,4 @@ date -Iseconds
 #rm -rf /astro/mwasci/asvo/{{asvo}}/* 
 date -Iseconds
 
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed}"
+#ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed}"
