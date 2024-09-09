@@ -35,6 +35,7 @@ trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_di
 cd {{tmp_dir}}
 mkdir {{obsid}}
 cd {{obsid}}/
+echo $PWD
 #cp {{pipeline_dir}}/pipeline_scripts/* .
 cp /software/projects/mwasci/awaszewski/pipeline_scripts/* ./
 
@@ -62,10 +63,10 @@ date -Iseconds
 
 {% for pol in pols %}
 #singularity exec -B $PWD {{container}} BANE --noclobber --compress {{obsid}}_{{freq}}-{{pol}}-image.fits
-singularity exec -B $PWD {{container}} BANE {{obsid}}_{{freq}}-{{pol}}-image.fits
+singularity exec -B $PWD {{gleam_container}} BANE {{obsid}}_{{freq}}-{{pol}}-image.fits
 singularity exec -B $PWD {{container}} aegean --slice=0 --autoload --seedclip=5 --floodclip=4 --table {{obsid}}_{{freq}}-{{pol}}-image.vot {{obsid}}_{{freq}}-{{pol}}-image.fits
 singularity exec -B $PWD {{container}} python3 make_cat.py --pol={{pol}} {{obsid}}.hdf5 {{obsid}}_{{freq}}-{{pol}}-image_comp.vot {{obsid}}_{{freq}}-{{pol}}-image.vot -o {{obsid}}
-singularity exec -B $PWD,/software/projects/mwasci/awaszewski {{container}} python3 match_calibration.py {{obsid}}_{{freq}}-{{pol}}-image.vot /software/projects/mwasci/awaszewski/catalogs/ips_continuum_cal.fits {{obsid}}_{{freq}}-{{pol}}-image_cal.vot
+singularity exec -B $PWD {{container}} python3 match_calibration.py {{obsid}}_{{freq}}-{{pol}}-image.vot /software/projects/mwasci/awaszewski/catalogs/ips_continuum_cal.fits {{obsid}}_{{freq}}-{{pol}}-image_cal.vot
 {% endfor %}
 
 singularity exec -B $PWD {{container}} python3 abs_scale.py {{obsid}} {{freq}}
@@ -89,7 +90,7 @@ singularity exec -B $PWD {{container}} python3 measure_noise.py {{obsid}}
 #########################
 singularity exec -B $PWD {{container}} python3 get_continuum.py --sigma {{obsid}}.hdf5 {{freq}} {{obsid}}_{{freq}}-image.fits
 #singularity exec -B $PWD {{container}} BANE --noclobber --compress {{obsid}}_{{freq}}-image.fits
-singularity exec -B $PWD {{container}} BANE {{obsid}}_{{freq}}-image.fits
+singularity exec -B $PWD {{gleam_container}} BANE {{obsid}}_{{freq}}-image.fits
 singularity exec -B $PWD {{container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}-image.vot {{obsid}}_{{freq}}-image.fits
 
 mypath=$PATH
@@ -101,7 +102,7 @@ export PATH=$mypath
 export PYTHONPATH=$mypythonpath
 
 #singularity exec -B $PWD {{container}} BANE --noclobber --compress {{obsid}}_{{freq}}_image_moment2.fits
-singularity exec -B $PWD {{container}} BANE --cores 1 {{obsid}}_{{freq}}_image_moment2.fits
+singularity exec -B $PWD {{gleam_container}} BANE --cores 1 {{obsid}}_{{freq}}_image_moment2.fits
 singularity exec -B $PWD {{container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}_image_moment2.vot {{obsid}}_{{freq}}_image_moment2.fits
 
 python3 make_beam_only.py {{obsid}}.hdf5 {{obsid}}_beam.hdf5 -f 121-132
@@ -122,6 +123,5 @@ rsync -a {{obsid}}.hdf5 \
 date -Iseconds
 
 # Update database to show that observation has finished processing
-# ssh mwa-solar "export DB_FILE={{DB_dir}}/log.sqlite; python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -s Completed" || echo "Log file update failed"
 ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed}"
 

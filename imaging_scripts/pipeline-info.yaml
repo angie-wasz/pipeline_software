@@ -12,6 +12,7 @@ pols:
         - XX
         - YY
 container: /software/projects/mwasci/awaszewski/ips_post.img
+gleam_container: /software/projects/mwasci/kross/GLEAM-X-pipeline/gleamx_container.img
 mem: 50
 # Imaging parameters
 niter: 100000
