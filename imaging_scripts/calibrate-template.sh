@@ -38,10 +38,12 @@ date -Iseconds
 cp /software/projects/mwasci/awaszewski/pipeline_scripts/aocal* ./
 
 # Obtain sky model, probably on mwa-solar, move it over to garra at beginning
-cp {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}_skymodel.* ./
+#cp {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}_skymodel.* ./
+# SIKE actually use the big gleam one
+skymodel="/software/projects/mwasci/awaszewski/catalogs/GGSM.txt"
 
 # Calibration
-hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits {{obsid}}_skymodel.txt --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
+hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits {{skymodel}} --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
 
 # Plot solutions
 hyperdrive plot-solutions {{obsid}}_sols.fits
