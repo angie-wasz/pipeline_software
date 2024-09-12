@@ -43,7 +43,7 @@ cp /software/projects/mwasci/awaszewski/pipeline_scripts/aocal* ./
 skymodel="/software/projects/mwasci/awaszewski/catalogs/GGSM.txt"
 
 # Calibration
-hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits {{skymodel}} --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
+hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits ${skymodel} --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
 
 # Plot solutions
 hyperdrive plot-solutions {{obsid}}_sols.fits
