@@ -5,6 +5,11 @@ asvo=$2
 year=$3
 
 out_dir=/scratch/mwasci/awaszewski/pipeline/${year}/${obsid}
+echo "Checking if out directory exists"
+if [ ! -d ${out_dir} ]; then
+	echo "Making out directory"
+	mkdir ${out_dir}
+fi
 
 container=/software/projects/mwasci/awaszewski/ips_post.img
 scripts_dir=/software/projects/mwasci/awaszewski/imaging_scripts/
