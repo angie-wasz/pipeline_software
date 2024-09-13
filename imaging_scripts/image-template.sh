@@ -90,4 +90,5 @@ date -Iseconds
 #rm -rf /astro/mwasci/asvo/{{asvo}}/* 
 date -Iseconds
 
+# DON"T SAY ITS DONE ITS NOT DONE IT NEEDS TO DO POST IMAGE AS WELL
 #ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed}"

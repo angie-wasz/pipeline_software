@@ -66,7 +66,7 @@ date -Iseconds
 singularity exec -B $PWD {{gleam_container}} BANE {{obsid}}_{{freq}}-{{pol}}-image.fits
 singularity exec -B $PWD {{container}} aegean --slice=0 --autoload --seedclip=5 --floodclip=4 --table {{obsid}}_{{freq}}-{{pol}}-image.vot {{obsid}}_{{freq}}-{{pol}}-image.fits
 singularity exec -B $PWD {{container}} python3 make_cat.py --pol={{pol}} {{obsid}}.hdf5 {{obsid}}_{{freq}}-{{pol}}-image_comp.vot {{obsid}}_{{freq}}-{{pol}}-image.vot -o {{obsid}}
-singularity exec -B $PWD {{container}} python3 match_calibration.py {{obsid}}_{{freq}}-{{pol}}-image.vot /software/projects/mwasci/awaszewski/catalogs/ips_continuum_cal.fits {{obsid}}_{{freq}}-{{pol}}-image_cal.vot
+singularity exec -B $PWD,{{software}} {{container}} python3 match_calibration.py {{obsid}}_{{freq}}-{{pol}}-image.vot {{software}}/catalogs/ips_continuum_cal.fits {{obsid}}_{{freq}}-{{pol}}-image_cal.vot
 {% endfor %}
 
 singularity exec -B $PWD {{container}} python3 abs_scale.py {{obsid}} {{freq}}

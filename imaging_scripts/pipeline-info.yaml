@@ -3,6 +3,7 @@ tmp_dir: /nvmetmp
 pipeline_dir: /scratch/mwasci/awaszewski/pipeline/
 metafits_dir: /scratch/mwasci/awaszewski/pipeline/
 DB_dir: /data/awaszewski/ips/db/
+software: /software/projects/mwasci/awaszewski/
 n_core: 38
 year: 2023
 aocal: 16

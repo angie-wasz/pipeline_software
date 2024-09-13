@@ -3,7 +3,7 @@
 #SBATCH --output={{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}-calibrate.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #SBATCH --clusters=garrawarla
 #SBATCH --partition=gpuq
 #SBATCH --account=mwasci
@@ -13,7 +13,7 @@
 set -euxEo pipefail
 
 # In case of failure
-#trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during calibration\""' ERR
+trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during calibration\""' ERR
 
 # Load relevant modules
 module use /pawsey/mwa/software/python3/modulefiles
@@ -25,7 +25,7 @@ mkdir {{obsid}}
 cd {{obsid}}/
 
 # Update database to set observation to processing
-#ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status Processing -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status Processing -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
 
 command -V hyperdrive
 
@@ -43,7 +43,7 @@ cp /software/projects/mwasci/awaszewski/pipeline_scripts/aocal* ./
 skymodel="/software/projects/mwasci/awaszewski/catalogs/GGSM.txt"
 
 # Calibration
-hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits ${skymodel} --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
+hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits -s ${skymodel} --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
 
 # Plot solutions
 hyperdrive plot-solutions {{obsid}}_sols.fits
@@ -60,4 +60,4 @@ rsync -av {{obsid}}_sols.fits \
 		{{pipeline_dir}}/{{year}}/{{obsid}}/
 
 # Update database to show that observation has finished successfully
-#ssh mwa-solar "python3 {{DB_dir}}/dp_update_log.py -o {{obsid}} --status Done -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status Done -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
