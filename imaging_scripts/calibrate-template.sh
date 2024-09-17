@@ -3,7 +3,7 @@
 #SBATCH --output={{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}-calibrate.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
-#SBATCH --time=02:00:00
+#SBATCH --time=01:00:00
 #SBATCH --clusters=garrawarla
 #SBATCH --partition=gpuq
 #SBATCH --account=mwasci
@@ -43,7 +43,13 @@ cp /software/projects/mwasci/awaszewski/pipeline_scripts/aocal* ./
 skymodel="/software/projects/mwasci/awaszewski/catalogs/GGSM.txt"
 
 # Calibration
-hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits -s ${skymodel} --uvw-min 130m --uvw-max 2600m -o {{obsid}}_sols.fits
+hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits \
+								-s ${skymodel} \
+								--num-sources 250 \
+								--uvw-min 130m \
+								--uvw-max 2600m \
+								-o {{obsid}}_sols.fits
+#								--tile-flags 85 101 107 109 110 112 \
 
 # Plot solutions
 hyperdrive plot-solutions {{obsid}}_sols.fits
@@ -57,6 +63,7 @@ rsync -av {{obsid}}_sols.fits \
 		{{obsid}}*.png \
 		{{obsid}}.bin \
 		{{obsid}}_160.bin \
+		{{obsid}}.metafits \
 		{{pipeline_dir}}/{{year}}/{{obsid}}/
 
 # Update database to show that observation has finished successfully

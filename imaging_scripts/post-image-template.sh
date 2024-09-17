@@ -69,6 +69,10 @@ singularity exec -B $PWD {{container}} python3 make_cat.py --pol={{pol}} {{obsid
 singularity exec -B $PWD,{{software}} {{container}} python3 match_calibration.py {{obsid}}_{{freq}}-{{pol}}-image.vot {{software}}/catalogs/ips_continuum_cal.fits {{obsid}}_{{freq}}-{{pol}}-image_cal.vot
 {% endfor %}
 
+#rsync -a {{obsid}}_121-132-*-image_comp.vot \
+#		{{obsid}}_121-132-*-image_cal.vot \
+#		{{pipeline_dir}}/{{year}}/{{obsid}}/	
+
 singularity exec -B $PWD {{container}} python3 abs_scale.py {{obsid}} {{freq}}
 date -Iseconds
 
