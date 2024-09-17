@@ -7,7 +7,7 @@ year=$3
 out_dir=/scratch/mwasci/awaszewski/pipeline/${year}/${obsid}
 echo "Checking if out directory exists"
 if [ ! -d ${out_dir} ]; then
-	echo "Making out directory"
+	echo "Making directory: ${out_dir}"
 	mkdir ${out_dir}
 fi
 
