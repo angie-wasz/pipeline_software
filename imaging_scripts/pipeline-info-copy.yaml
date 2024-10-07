@@ -5,10 +5,10 @@ metafits_dir: /scratch/mwasci/awaszewski/pipeline/
 DB_dir: /data/awaszewski/ips/db/
 software: /software/projects/mwasci/awaszewski/
 n_core: 38
-year: 2020
-aocal: 16
-#files162: "{121..132}"
-files162: "{13..24}"
+year: 2024
+aocal: 4
+files162: "{121..132}"
+#files162: "{13..24}"
 timesteps: "{320..880}"
 freq: 121-132
 pols:

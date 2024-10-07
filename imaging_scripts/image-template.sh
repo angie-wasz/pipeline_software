@@ -49,7 +49,8 @@ else
 fi
 
 # Copy calibration solutions
-rsync -a mwa-solar:/data/awaszewski/ips/pipeline/{{year}}/central/{{obsid}}/{{obsid}}_160.bin ./
+rsync -a mwa-solar:/data/awaszewski/ips/pipeline/{{year}}/cal_sols_160/{{obsid}}_160.bin ./
+#rsync -a mwa-solar:/data/awaszewski/ips/pipeline/{{year}}/central/{{obsid}}/{{obsid}}_160.bin ./
 mv {{obsid}}_160.bin {{obsid}}_sols_avg.bin
 
 # Change centre

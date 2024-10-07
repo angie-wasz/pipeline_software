@@ -14,7 +14,7 @@ fi
 container=/software/projects/mwasci/awaszewski/ips_post.img
 scripts_dir=/software/projects/mwasci/awaszewski/imaging_scripts/
 
-singularity exec -B $PWD ${container} jinja2 ${scripts_dir}/calibrate-template.sh ${scripts_dir}/pipeline-info.yaml --format=yaml \
+singularity exec -B $PWD ${container} jinja2 ${scripts_dir}/calibrate-template.sh ${scripts_dir}/pipeline-info-copy.yaml --format=yaml \
 	-D obsid=${obsid} \
 	-D asvo=${asvo} \
 	--strict -o ${out_dir}/${obsid}-calibrate.sh
