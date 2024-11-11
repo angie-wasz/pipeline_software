@@ -29,13 +29,12 @@ unset SINGULARITYENV_FI_PROVIDER_PATH
 unset SINGULARITYENV_LD_LIBRARY_PATH
 
 # Incase of failure
-trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during post imaging\""' ERR
+trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/{{log_file}} --status Failed --note \"Failed during post imaging\""' ERR
 
 # Move to the temporary working directory on the NVMe
 cd {{tmp_dir}}
 mkdir {{obsid}}
 cd {{obsid}}/
-echo $PWD
 #cp {{pipeline_dir}}/pipeline_scripts/* .
 cp /software/projects/mwasci/awaszewski/pipeline_scripts/* ./
 
@@ -127,5 +126,5 @@ rsync -a {{obsid}}.hdf5 \
 date -Iseconds
 
 # Update database to show that observation has finished processing
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed}"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/{{log_file}}" || echo "Log file update failed}"
 

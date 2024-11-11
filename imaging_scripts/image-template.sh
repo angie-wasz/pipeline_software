@@ -13,7 +13,7 @@
 set -euxEo pipefail
 
 # In case of failure
-trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during imaging\""' ERR
+trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/{{log_file}} --status Failed --note \"Failed during imaging\""' ERR
 
 # Load relevant modules
 module use /pawsey/mwa/software/python3/modulefiles
@@ -29,8 +29,7 @@ cd {{obsid}}/
 cp /software/projects/mwasci/awaszewski/imstack/* ./
 
 # Update database to set observation to processing
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status "Processing" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
-#ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status Processing -l {{DB_dir}}/log_image.sqlite" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status "Processing" -l {{DB_dir}}/{{log_file}}" || echo "Log file update failed"
 
 # Move ms onto nvme
 date -Iseconds
@@ -49,9 +48,18 @@ else
 fi
 
 # Copy calibration solutions
+
+#2020 
 rsync -a mwa-solar:/data/awaszewski/ips/pipeline/{{year}}/cal_sols_160/{{obsid}}_160.bin ./
+
+#the new normal way
 #rsync -a mwa-solar:/data/awaszewski/ips/pipeline/{{year}}/central/{{obsid}}/{{obsid}}_160.bin ./
 mv {{obsid}}_160.bin {{obsid}}_sols_avg.bin
+
+#2024 cross-cal
+#rsync -a mwa-solar:/data/awaszewski/ips/pipeline/{{year}}/central/{{obsid_cal}}/{{obsid_cal}}_160.bin ./
+#mv {{obsid_cal}}_160.bin {{obsid}}_sols_avg.bin
+
 
 # Change centre
 date -Iseconds
@@ -71,11 +79,11 @@ wsclean -j {{n_core}} -mem {{mem}} --name {{obsid}}_{{freq}} -subtract-model -po
 rm ./*-dirty.fits*
 rm ./*-model.fits
 rm ./*-psf.fits
+
 # Make hdf5 file
 date -Iseconds
 python3 make_imstack2.py -vvn 400 --start=0 --suffixes=image --outfile={{obsid}}.hdf5 --skip_beam --allow_missing {{obsid}} --bands={{freq}}
 date -Iseconds
-#python3 lookup_beam_imstack.py {{obsid}}.hdf5 {{obsid}}.metafits {{freq}} --beam_path=/astro/mwasci/awaszewski/EoR_scin_pipeline/hdf5/gleam_xx_yy.hdf5 -v
 python3 lookup_beam_imstack.py {{obsid}}.hdf5 {{obsid}}.metafits {{freq}} --beam_path=/software/projects/mwasci/awaszewski/hdf5/gleam_xx_yy.hdf5 -v
 python3 add_continuum.py --overwrite {{obsid}}.hdf5 {{obsid}} {{freq}} image
 date -Iseconds
@@ -86,8 +94,7 @@ rsync -av ./*.fits {{pipeline_dir}}/{{year}}/{{obsid}}/
 rsync -av {{obsid}}.hdf5 {{pipeline_dir}}/{{year}}/{{obsid}}/
 date -Iseconds
 
-#rm -rf /astro/mwasci/asvo/{{asvo}}/* 
 date -Iseconds
 
-# DON"T SAY ITS DONE ITS NOT DONE IT NEEDS TO DO POST IMAGE AS WELL
+# ONLY USE THIS WHEN TESTING IMAGING WITHOUT POST IMAGE
 #ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status "Done" -l {{DB_dir}}/log.sqlite" || echo "Log file update failed}"

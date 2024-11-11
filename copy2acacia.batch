@@ -26,7 +26,7 @@ year=2023
 fullPathInAcacia="${profileName}:${bucketName}/${prefixPath}" #Note the colon(:) when using rclone
 
 #Local storage variables
-workingDir=/scratch/mwasci/awaszewski/${year}
+workingDir=/scratch/mwasci/awaszewski/pipeline/${year}
 tarFileNames= ( 1361501224/1361501224.hdf5 1361514976/1361514976.hdf5 1361519656/1361519656.hdf5 1363311312/1363311312.hdf5 )
 
 

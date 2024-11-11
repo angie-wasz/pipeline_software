@@ -13,7 +13,7 @@
 set -euxEo pipefail
 
 # In case of failure
-trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/log.sqlite --status Failed --note \"Failed during calibration\""' ERR
+trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -l {{DB_dir}}/{{log_file}} --status Failed --note \"Failed during calibration\""' ERR
 
 # Load relevant modules
 module use /pawsey/mwa/software/python3/modulefiles
@@ -25,7 +25,7 @@ mkdir {{obsid}}
 cd {{obsid}}/
 
 # Update database to set observation to processing
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status Processing -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --slurm $SLURM_JOB_ID --status Processing -l {{DB_dir}}/{{log_file}}" || echo "Log file update failed"
 
 command -V hyperdrive
 
@@ -43,14 +43,14 @@ cp /software/projects/mwasci/awaszewski/pipeline_scripts/aocal* ./
 skymodel="/software/projects/mwasci/awaszewski/catalogs/GGSM.txt"
 
 # Calibration
-#hyperdrive di-calibrate -d ./*gpubox{{files162}}*.fits {{obsid}}.metafits \
-hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits \
+#hyperdrive di-calibrate -d *ch{{files162}}*.fits {{obsid}}.metafits \
+hyperdrive di-calibrate -d ./*gpubox{{files162}}*.fits {{obsid}}.metafits \
 								-s ${skymodel} \
 								--num-sources 250 \
 								--uvw-min 130m \
 								--uvw-max 2600m \
-								-o {{obsid}}_sols.fits 
-#								--timesteps {{timesteps}}
+								-o {{obsid}}_sols.fits \
+								--timesteps {{timesteps}}
 #								--tile-flags 85 101 107 109 110 112 \
 
 # Plot solutions
@@ -69,4 +69,4 @@ rsync -av {{obsid}}_sols.fits \
 		{{pipeline_dir}}/{{year}}/{{obsid}}/
 
 # Update database to show that observation has finished successfully
-ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status Done -l {{DB_dir}}/log.sqlite" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} --status Done -l {{DB_dir}}/{{log_file}}" || echo "Log file update failed"
