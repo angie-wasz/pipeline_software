@@ -4,8 +4,8 @@ obsid=$1
 asvo=$2
 year=$3
 log_file=$4
-#obs_cal=$4
-obs_cal=0
+#obs_cal=$5
+obs_cal=$1
 
 out_dir=/scratch/mwasci/awaszewski/pipeline/${year}/${obsid}
 echo "Checking if out directory exists"
@@ -27,7 +27,7 @@ singularity exec -B $PWD ${container} jinja2 ${scripts_dir}/image-template.sh ${
 
 slurmid1=$(sbatch ${out_dir}/${obsid}-image.sh | cut -d " " -f 4)
 
-#echo "Creating second slurm script"
+echo "Creating second slurm script"
 singularity exec -B $PWD ${container} jinja2 ${scripts_dir}/post-image-template.sh ${scripts_dir}/pipeline-info.yaml --format=yaml \
 	-D obsid=${obsid} \
 	-D log_file=${log_file} \

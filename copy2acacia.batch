@@ -27,7 +27,7 @@ fullPathInAcacia="${profileName}:${bucketName}/${prefixPath}" #Note the colon(:)
 
 #Local storage variables
 workingDir=/scratch/mwasci/awaszewski/pipeline/${year}
-tarFileNames= ( 1361501224/1361501224.hdf5 1361514976/1361514976.hdf5 1361519656/1361519656.hdf5 1363311312/1363311312.hdf5 )
+tarFileNames=( 1361501224/1361501224.hdf5 1361514976/1361514976.hdf5 1361519656/1361519656.hdf5 1363311312/1363311312.hdf5 )
 
 
 # YOU SHOULD NOT NEED TO EDIT ANYTHING BELOW THIS LINE
