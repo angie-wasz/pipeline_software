@@ -6,6 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
 #SBATCH --time=01:00:00
+#SBATCH --export=NONE
 
 set -exE
 

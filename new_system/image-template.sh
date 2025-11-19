@@ -7,6 +7,7 @@
 #SBATCH --ntasks-per-node={{n_core}}
 #SBATCH --mem=50G
 #SBATCH --time=05:00:00
+#SBATCH --export=NONE
 
 set -euxEo pipefail
 
