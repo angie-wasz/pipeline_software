@@ -3,3 +3,5 @@ ips_post.img
 setonix/
 new_system/test_data/
 new_system/new_system_test.sqlite
+new_system/__pycache__/
+quality_scripts/__pycache__/
