@@ -1,2 +1,5 @@
 hdf5/
 ips_post.img
+setonix/
+new_system/test_data/
+new_system/new_system_test.sqlite
