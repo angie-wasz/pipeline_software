@@ -1,0 +1,36 @@
+--- # Pipeline configuration
+tmp_dir: /nvmetmp
+pipeline_dir: /scratch/mwasci/awaszewski/pipeline/
+metafits_dir: /scratch/mwasci/awaszewski/pipeline/
+DB_dir: /data/awaszewski/ips/db/
+software: /software/projects/mwasci/awaszewski/
+n_core: 38
+year: 2022
+aocal: 16
+# post 2023
+files162: "{121..132}"
+# pre 2023
+#files162: "{13..24}"
+# calibrators
+#files162: "{109..132}"
+timesteps: "{320..880}"
+freq: 121-132
+pols:
+        - XX
+        - YY
+container: /software/projects/mwasci/awaszewski/ips_post.img
+gleam_container: /software/projects/mwasci/kross/GLEAM-X-pipeline/gleamx_container.img
+mem: 50
+# Imaging parameters
+niter: 100000
+minuv_l: 50
+taper_inner_tukey: 50
+size: 2400
+scale: 1.0amin
+taper: 2amin
+nmiter: 5
+mgain: 0.8
+automask: 3
+autothresh: 2
+interval_start: 0
+interval_stop: 400

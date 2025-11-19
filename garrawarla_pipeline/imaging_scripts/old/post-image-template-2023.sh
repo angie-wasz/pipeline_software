@@ -3,7 +3,7 @@
 #SBATCH --output={{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}-ips-post-image.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
-#SBATCH --time=06:00:00
+#SBATCH --time=3:00:00
 #SBATCH --clusters=garrawarla
 #SBATCH --partition=workq
 #SBATCH --account=mwasci
@@ -19,6 +19,9 @@ set -exE
 # Load relevant modules
 module load singularity
 
+# Incase of failure
+trap 'ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -s Failed -l {{DB_dir}}/log_image.sqlite"' ERR
+
 # Move to the temporary working directory on the NVMe
 cd {{tmp_dir}}
 cp {{pipeline_dir}}/pipeline_scripts/* .
@@ -26,8 +29,8 @@ cp {{pipeline_dir}}/pipeline_scripts/* .
 # Move relevant files onto nvme
 date -Iseconds
 rsync -a {{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}.hdf5 \
-	{% for p in pols %}{{obsid}}_{{freq}}-{{p}}-image.fits \
-	{% endfor %}.
+	{% for p in pols %}{{pipeline_dir}}/{{year}}/{{obsid}}/{{obsid}}_{{freq}}-{{p}}-image.fits \
+	{% endfor %} ./
 date -Iseconds
 
 # Locate metafits file
@@ -89,6 +92,15 @@ date -Iseconds
 rsync -a {{obsid}}.hdf5 \
 	{% for i in range(1, 5) %}{{obsid}}_{{freq}}_image_moment{{i}}.fits \
 	{% endfor %}{{obsid}}_{{freq}}_image_moment2_comp.vot \
+	{{obsid}}_{{freq}}-image.fits \
+	{{obsid}}_{{freq}}-image_bkg.fits \
+	{{obsid}}_{{freq}}-image_rms.fits \
+	{{obsid}}_{{freq}}_image_moment2_bkg.fits \
+	{{obsid}}_{{freq}}_image_moment2_rms.fits \
 	{{obsid}}_{{freq}}-image_comp.vot \
 	{{pipeline_dir}}/{{year}}/{{obsid}}/
 date -Iseconds
+
+# Update database to show that observation has finished processing
+# ssh mwa-solar "export DB_FILE={{DB_dir}}/log.sqlite; python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -s Completed" || echo "Log file update failed"
+ssh mwa-solar "python3 {{DB_dir}}/db_update_log.py -o {{obsid}} -s Completed -l {{DB_dir}}/log_image.sqlite" || echo "Log file update failed}"	

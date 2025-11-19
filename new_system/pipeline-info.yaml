@@ -1,0 +1,35 @@
+# Pipeline configuration
+software: /software/projects/mwasci/awaszewski/
+pipeline: /scratch/mwasci/awaszewski/pipeline/
+container: /software/projects/mwasci/awaszewski/ips_post.img
+gleam_container: /software/projects/mwasci/kross/GLEAM-X-pipeline/gleamx_container.img
+skymodel: /software/projects/mwasci/awaszewski/catalogs/GGSM.txt
+
+# Observation parameters
+aocal: 16
+sources: 250
+uvwmin: 130m
+uvwmax: 2600m
+freq: 121-132
+timesteps: "{320..880}"
+files162: "{121..132}" # NOTE: this only works for observations taken after 01-Jan-2023, for prior observations use "{13..24}"
+# for calibrator observations (non-IPS) use "{109..132}"
+pols:
+  - XX
+  - YY
+
+# Imaging parameters
+n_core: 32
+mem: 50
+niter: 100000
+minuv_l: 50
+taper_inner_tukey: 50
+size: 2400
+scale: 1.0amin
+taper: 2amin
+nmiter: 5
+mgain: 0.8
+automask: 3
+autothresh: 2
+interval_start: 0
+interval_stop: 400
