@@ -15,6 +15,10 @@ while [[ $# -gt 0 ]]; do
 			CALIBRATE="$2"
 			shift
 			shift;;
+		--skip-fail-check)
+			SKIP_FAIL_CHECK="$2"
+			shift
+			shift;;
 		-o|--obsid)
 			OBSID="$2"
 			shift
@@ -45,13 +49,6 @@ fi
 # sleep for a random amount of time
 sleep $(echo "scale=3; $RANDOM/32768*10" | bc)
 
-# Start log
-# first check if it already exists
-echo "${OBSID} Checking if observation is initialised in log"
-output=$(python read_log.py -l ${LOG} -o ${OBSID})
-if [[ -z "$output" ]]; then
-	python update_log.py -l ${LOG} -o ${OBSID} --initialise
-fi
 SOFTWARE=/software/projects/mwasci/awaszewski/new_system/
 
 # Data storage
@@ -60,19 +57,65 @@ DATA="/scratch/mwasci/awaszewski/pipeline/${OBSID}/"
 if [ ! -d ${DATA} ]; then
 	mkdir ${DATA}
 fi
+# I'm aware that if a data directory already exists, its probably been processed previously but easier to check with log
+
+ASVO_SKIP=FALSE
+CAL_SKIP=FALSE
+
+# Start log
+# first check if it already exists
+echo "${OBSID} Checking if observation is initialised in log"
+output=$(python read_log.py -l ${LOG} -o ${OBSID})
+
+if [[ -z "$output" ]]; then
+	python update_log.py -l ${LOG} -o ${OBSID} --initialise
+else
+	stage=$(echo ${output} | cut -d "|" -f 3 | awk '{print $2}')
+	status=$(echo ${output} | cut -d "|" -f 4 | awk '{print $2}')
+	ASVOID=$(echo ${output} | cut -d "|" -f 2 | awk '{print $2}')
+
+	if [[ $SKIP_FAIL_CHECK = FALSE ]]; then 
+		if [[ "$status" == "Failed" ]]; then
+			echo "${OBSID} has been processed in the past and has failed. Skipping this observation. If you want to run it again, then create new list of failed observations and add flag --skip-fail-check"
+			exit
+		fi
+	fi
+
+	if [[ "$stage" == "Calibration" || "$status" == "Complete" ]]; then
+		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
+		cal_sols=${DATA}/${OBSID}_sols.fits
+		if [ -f ${cal_sols} ]; then
+			echo "${OBSID} calibration solutions are available. Skipping calibration"
+			CAL_SKIP=TRUE
+		fi
+	fi
+
+	if [[ $ASVOID -ne 0 ]]; then
+		echo "${OBSID} has already been downloaded from ASVO. Checking if measurement set is available."
+		ms=/scratch/mwasci/asvo/${ASVOID}/${obsid}_ch121-132.ms/
+		if [ -d ${ms} ]; then
+			echo "${OBSID} measurement set available. Skipping ASVO download"
+			ASVO_SKIP=TRUE
+		fi
+	fi
+fi
 
 # ASVO staging
-./asvo.sh ${OBSID} ${LOG}
-ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
+if [ $ASVO_SKIP = FALSE]; then
+	./asvo.sh ${OBSID} ${LOG}
+	ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
+fi
 
 # Calibration
-./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
+if [ $CAL_SKIP = FALSE]; then
+	./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
+fi
 
 # Check data quality
-echo "${OBSID} Checking data quality after calibration"
+echo "${OBSID} Checking data quality"
 frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
 resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
-echo $frac_bad $resid
+echo "${OBSID} quality ${frac_bad} ${resid}"
 if [[ -z "$frac_bad" || -z "$resid" ]]; then
 	echo "${OBSID} Quality metrics don't exist"
 	exit 1
@@ -90,6 +133,7 @@ if [ "$CALIBRATE" == "TRUE" ]; then
 fi
 
 # Imaging
+# do i check if observation has already been imaged? if it has I probably wouldn't be running the pipeline on it
 ./image.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 
 # Acacia storage
