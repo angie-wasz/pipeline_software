@@ -3,7 +3,7 @@ LOG=$2
 
 module load giant-squid/2.3.0
 
-echo "ASVO"
+echo "${OBSID} ASVO"
 
 export MWA_ASVO_API_KEY=bafde459-bcaa-4019-84b8-b87667f01e47
 export GIANT_SQUID_DELIVERY=scratch
@@ -20,10 +20,10 @@ if giant-squid submit-conv ${OBSID} -w -d scratch \
 	rm asvo_${OBSID}
 
     if [ -z "$ASVOID" ]; then
-        echo "ASVOID does not exist"
+        echo "${OBSID} ASVOID does not exist"
         exit 1
     elif [[ ${#ASVOID} -ne 6 ]]; then
-        echo "ASVOID of incorrect format, must be a 6 digit integer"
+        echo "${OBSID} ASVOID of incorrect format, must be a 6 digit integer - what was provided: ${ASVOID}"
         exit 1
     fi
 	
@@ -31,10 +31,10 @@ if giant-squid submit-conv ${OBSID} -w -d scratch \
 
 else
 
-    echo "Failed to stage ${OBSID} on ASVO"
+    echo "${OBSID} Failed to stage on ASVO"
     python update_log.py -l ${LOG} -o ${OBSID} --status Failed
     exit 1
 
 fi
 
-echo "ASVO Complete"
+echo "${OBSID} ASVO Complete"

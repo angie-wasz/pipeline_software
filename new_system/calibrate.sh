@@ -7,7 +7,7 @@ LOG=$5
 module load singularity/4.1.0-slurm
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 
-echo "Calibration"
+echo "${OBSID} Calibration"
 
 singularity exec -B $PWD ${container} jinja2 calibrate-template.sh pipeline-info.yaml --format=yaml \
 	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
@@ -27,7 +27,7 @@ while [ ${running} -eq 1 ]; do
 
     if [[ "$output" == *"Failed"* ]]; then 
         
-        echo "Calibration has failed"
+        echo "${OBSID} Calibration has failed"
         exit 1
 
     elif [[ "$output" == *"Complete" ]]; then   
@@ -38,4 +38,4 @@ while [ ${running} -eq 1 ]; do
     fi
 done
 
-echo "Calibration complete"
+echo "${OBSID} Calibration complete"

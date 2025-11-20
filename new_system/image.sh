@@ -4,9 +4,9 @@ DATA=$3
 SOFTWARE=$4
 LOG=$5
 
-container="/software/projects /mwasci/awaszewski/ips_post.img"
+container="/software/projects/mwasci/awaszewski/ips_post.img"
 
-echo "Imaging and Post-imaging"
+echo "${OBSID} Imaging and Post-imaging"
 
 singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
 	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
@@ -33,7 +33,7 @@ while [ ${running} -eq 1 ]; do
 
     if [[ "$output" == *"Failed"* ]]; then
 
-        echo "Imaging has failed"
+        echo "${OBSID} Imaging has failed"
         exit 1
 
     elif [[ "$output" == *"Complete" ]]; then
@@ -43,4 +43,4 @@ while [ ${running} -eq 1 ]; do
     fi
 done
 
-echo "Imaging and Post-imaging complete
+echo "${OBSID} Imaging and Post-imaging complete

@@ -3,6 +3,8 @@ DATA=$2
 
 copyouts=/software/projects/mwasci/awaszewski/copyouts/obsids
 
+echo "${OBSID} Moving data to Acacia"
+
 # first create hdf5 transfer job
 FILES=${OBSID}.hdf5
 path=ips/hdf5_2025/
@@ -23,4 +25,7 @@ singularity exec -B $PWD ${container} jinja2 acacia-template.sh acacia-info.yaml
     -D DATA=${DATA} -D FILES=${FILES} \
     --strict -o ${copyouts}/${OBSID}-acacia.sh
     
-sbatch --dependency=afterok:$jobid ${copyouts}/${OBSID}-acacia.sh
+transfer_jobid=$(sbatch --dependency=afterok:$jobid ${copyouts}/${OBSID}-acacia.sh | cut -d " " -f 4)
+
+echo "${OBSID} Finished processing - check transfer jobs"
+echo "${OBSID} Job ids to check - hdf5 job: ${jobid} and tar job: ${transfer_jobid}"

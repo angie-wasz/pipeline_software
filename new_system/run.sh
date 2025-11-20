@@ -37,7 +37,7 @@ if [ -z "$OBSID" ]; then
 	echo "No OBSID passed in"
 	exit 1
 elif [[ ${#OBSID} -ne 10 ]]; then
-	echo "OBSID of incorrect format, must be in GPS (10 digits)"
+	echo "OBSID of incorrect format, must be in GPS (10 digits) - what was provided: ${OBSID}"
 	exit 1
 fi
 
@@ -47,7 +47,7 @@ sleep $(echo "scale=3; $RANDOM/32768*10" | bc)
 
 # Start log
 # first check if it already exists
-echo "Checking if observation is initialised in log"
+echo "${OBSID} Checking if observation is initialised in log"
 output=$(python read_log.py -l ${LOG} -o ${OBSID})
 if [[ -z "$output" ]]; then
 	python update_log.py -l ${LOG} -o ${OBSID} --initialise
@@ -55,7 +55,7 @@ fi
 SOFTWARE=/software/projects/mwasci/awaszewski/new_system/
 
 # Data storage
-echo "Checking if data directory already exists"
+echo "${OBSID} Checking if data directory already exists"
 DATA="/scratch/mwasci/awaszewski/pipeline/${OBSID}/"
 if [ ! -d ${DATA} ]; then
 	mkdir ${DATA}
@@ -69,23 +69,23 @@ ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{prin
 ./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 
 # Check data quality
-echo "Checking data quality after calibration"
+echo "${OBSID} Checking data quality after calibration"
 frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
 resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
 echo $frac_bad $resid
 if [[ -z "$frac_bad" || -z "$resid" ]]; then
-	echo "Quality metrics don't exist"
+	echo "${OBSID} Quality metrics don't exist"
 	exit 1
 fi
 if [ ${frac_bad} -gt 0.6 ]; then
 	if [ ${resid} -gt 20 ]; then
-		echo "Data quality does not meet requirements for further processing"
+		echo "${OBSID} Data quality does not meet requirements for further processing"
 		exit
 	fi
 fi
 
 if [ "$CALIBRATE" == "TRUE" ]; then
-	echo "As only calibration was chosen, workflow finishing now"
+	echo "${OBSID} As only calibration was chosen, workflow finishing now"
 	exit
 fi
 
@@ -99,3 +99,5 @@ fi
 
 # Do we want to check when acacia transfer is done? 
 # Yes but I don't know how
+
+echo "${OBSID} done"
