@@ -26,10 +26,17 @@ def main():
 		rows = cur.fetchall()
 
 	for row in rows:
+
+		obsid = row[1]
+		asvoid = row[2]
+		stage = row[3]
+		status = row[4]
+
 		if args.quality:
-			print(f"OBSID: {row[1]} | frac_bad: {row[6]:.2f} | resid: {row[7]:.1f}")
+			if asvoid != 0:
+				print(f"OBSID: {row[1]} | frac_bad: {row[6]:.2f} | resid: {row[7]:.1f}")
 		else:
-			print(f"OBSID: %d | ASVOID: %d | Stage: %s | Status: %s" % (row[1], row[2], row[3], row[4]))
+			print(f"OBSID: %d | ASVOID: %d | Stage: %s | Status: %s" % (obsid, asvoid, stage, status))
 		
 
 if __name__ == "__main__":
