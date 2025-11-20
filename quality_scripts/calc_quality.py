@@ -8,10 +8,6 @@ from aocal import fromfile
 import argparse
 import sys, os
 
-script_dir = os.path.abspath('/software/projects/mwasci/awaszewski/new_system')
-sys.path.insert(0, script_dir)
-import update_log
-
 MIN_POINTS = 3
 
 def semihex(data, axis=None):
@@ -168,6 +164,11 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--obsid", type=str, required=True)
     parser.add_argument("-p", "--path", type=str, required=True)
     parser.add_argument("-l", "--log", type=str, required=True)
+    parser.add_argument("-s", "--software", type=str, required=True)
     args = parser.parse_args()
 	
+    script_dir = os.path.abspath(args.software)
+    sys.path.insert(0, script_dir)
+    import update_log
+
     main(vars(args))

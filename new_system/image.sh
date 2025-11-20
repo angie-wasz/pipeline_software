@@ -4,7 +4,7 @@ DATA=$3
 SOFTWARE=$4
 LOG=$5
 
-container="/software/projects/mwasci/awaszewski/ips_post.img"
+container="/software/projects /mwasci/awaszewski/ips_post.img"
 
 echo "Imaging and Post-imaging"
 

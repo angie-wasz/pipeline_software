@@ -69,9 +69,14 @@ ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{prin
 ./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 
 # Check data quality
+echo "Checking data quality after calibration"
 frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
 resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
 echo $frac_bad $resid
+if [[ -z "$frac_bad" || -z "$resid" ]]; then
+	echo "Quality metrics don't exist"
+	exit 1
+fi
 if [ ${frac_bad} -gt 0.6 ]; then
 	if [ ${resid} -gt 20 ]; then
 		echo "Data quality does not meet requirements for further processing"
@@ -80,13 +85,17 @@ if [ ${frac_bad} -gt 0.6 ]; then
 fi
 
 if [ "$CALIBRATE" == "TRUE" ]; then
-	echo "Skipping imaging steps"
-else
-	# Imaging
-	./image.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
+	echo "As only calibration was chosen, workflow finishing now"
+	exit
 fi
+
+# Imaging
+./image.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 
 # Acacia storage
 # move hdf5 to acacia separately in its own hdf5 directory
 # zip up the rest of the observation directory and shove it onto acacia
 ./acacia.sh ${OBSID} ${DATA}
+
+# Do we want to check when acacia transfer is done? 
+# Yes but I don't know how

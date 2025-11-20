@@ -5,7 +5,7 @@ Help()
 	echo " "
 	echo "-o/--obsids : a list of obsids that are to be processed, \\n separated. Mandatory"
 	echo "-n/--num-parallel : the number of jobs to run in parallel. Default is 8. Optional"
-	echo "-s/--safemode : if included, then data is not deleted from /scratch/asvo. Optional but recommended"
+	echo "-s/--safemode : if included, then data is not deleted from /scratch/asvo. CURRENTLY NOT IMPLEMENTED! Optional but recommended"
 	echo "-c/--calibrate : if included, then will only run calibration portion of pipeline"
 	echo " "
 }
@@ -72,13 +72,14 @@ if [[ -z ${CALIBRATE+x} ]]; then
 	CALIBRATE=FALSE
 fi
 
-echo "Parameters"
+echo "Workflow Parameters"
 echo "OBSIDS 		= ${OBSIDS}"
 echo "NUM_PARALLEL 	= ${NUM_PARALLEL}"
 echo "SAFEMODE	= ${SAFEMODE}" 
 echo "CALIBRATE = ${CALIBRATE}"
 echo " "
 
+# Log must be separately initialised
 LOG=new_system_test.sqlite
 
 # Kick off the pipeline

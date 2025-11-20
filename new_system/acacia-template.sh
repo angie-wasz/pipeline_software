@@ -2,12 +2,12 @@
 
 #SBATCH --account=mwasci
 #SBATCH --partition=copy
-#SBATCH --job-name={{obsid}}-ips-acacia
-#SBATCH --output={{obsid}}-acacia.out
+#SBATCH --job-name={{jobName}}
+#SBATCH --output={{output}}
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu=8G
-#SBATCH --time=12:00:00
+#SBATCH --time=00:30:00
 #SBATCH --export=NONE
 #SBATCH --signal=B:INT@60
 

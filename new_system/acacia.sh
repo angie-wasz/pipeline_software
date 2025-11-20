@@ -1,16 +1,26 @@
 OBSID=$1
 DATA=$2
 
-# transfer over the hdf5
+copyouts=/software/projects/mwasci/awaszewski/copyouts/obsids
 
-# if successful remove the hdf5 file
+# first create hdf5 transfer job
+FILES=${OBSID}.hdf5
+path=ips/hdf5_2025/
+singularity exec -B $PWD ${container} jinja2 acacia-template.sh acacia-info.yaml --format yaml \
+    -D jobName=${OBSID}-hdf5-acacia -D output=${OBSID}-hdf5-acacia.out \
+    -D path=${path} -D DATA=${DATA} -D FILES=${FILES} \
+    --strict -o ${copyouts}/${OBSID}-hdf5-acacia.sh
+
+jobid=$(sbatch ${copyouts}/${OBSID}-hdf5-acacia.sh | cut -d " " -f 4)
 
 # tar up the remainder of the directory
-FILES = 
+tar -cvf ${obsid}.tar ${DATA} --exclude=${DATA}/${OBSID}.hdf5
 
-# create copy job using template
+FILES=${OBSID}.tar
+path=ips/data/
 singularity exec -B $PWD ${container} jinja2 acacia-template.sh acacia-info.yaml --format yaml \
-    -D obsid=${OBSID} -D DATA=${DATA} -D FILES=${FILES} \
-    --strict -o /software/projects/mwasci/awaszewski/copyouts/${OBSID}-acacia.sh
+    -D jobName=${obsid}-acacia -D output=${OBSID}-acacia.out \
+    -D DATA=${DATA} -D FILES=${FILES} \
+    --strict -o ${copyouts}/${OBSID}-acacia.sh
     
-# run
+sbatch --dependency=afterok:$jobid ${copyouts}/${OBSID}-acacia.sh

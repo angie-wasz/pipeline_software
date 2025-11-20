@@ -33,7 +33,7 @@ while [ ${running} -eq 1 ]; do
     elif [[ "$output" == *"Complete" ]]; then   
         
         running=0
-        python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG}
+        python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
 
     fi
 done

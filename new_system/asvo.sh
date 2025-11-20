@@ -18,6 +18,14 @@ if giant-squid submit-conv ${OBSID} -w -d scratch \
 	giant-squid list ${OBSID} > asvo_${OBSID}
 	ASVOID=$(grep "Conversion" asvo_${OBSID} | awk '{print $2}')
 	rm asvo_${OBSID}
+
+    if [ -z "$ASVOID" ]; then
+        echo "ASVOID does not exist"
+        exit 1
+    elif [[ ${#ASVOID} -ne 6 ]]; then
+        echo "ASVOID of incorrect format, must be a 6 digit integer"
+        exit 1
+    fi
 	
     python update_log.py -l ${LOG} -o ${OBSID} --status Complete --asvo ${ASVOID}
 
@@ -28,3 +36,5 @@ else
     exit 1
 
 fi
+
+echo "ASVO Complete"
