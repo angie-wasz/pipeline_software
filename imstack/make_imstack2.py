@@ -169,7 +169,7 @@ for band in opts.bands:
         if np.any(np.isnan(pb_sum)):
             logging.warn("NaNs in primary beam")
     else:
-        pb_mask = np.ones(data_shape[1:-1] + [1], dtype=np.bool)
+        pb_mask = np.ones(data_shape[1:-1] + [1], dtype=bool)
         pb_nan = np.ones(data_shape[1:-1] + [1])
 
     # write main header information
