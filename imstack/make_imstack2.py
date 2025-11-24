@@ -12,7 +12,7 @@ TIME_INTERVAL = 0.5
 TIME_INDEX = 1
 POLS = 'XX,YY'
 STAMP_SIZE = 16
-SLICE = [0, 0, slice(None, None, None), slice(None, None, None)]
+SLICE = (0, 0, slice(None, None, None), slice(None, None, None))
 HDU = 0
 PB_THRESHOLD = 0.1 # fraction of pbmax
 #SUFFIXES=["image", "model", "dirty"]
@@ -199,7 +199,7 @@ for band in opts.bands:
         n_rows = image_size
         i=0
         for t in range(opts.n):
-            im_slice = [slice(n_rows*i, n_rows*(i+1)), slice(None, None, None)]
+            im_slice = (slice(n_rows*i, n_rows*(i+1)), slice(None, None, None))
             fits_slice = SLICE[:-2] + im_slice
 
             for p, pol in enumerate(opts.pols):
