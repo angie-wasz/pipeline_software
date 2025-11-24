@@ -1,6 +1,6 @@
 module load python/3.11.6
 module load py-numpy/1.25.2
-module load py-astropy/5.1
+module load py-astropy/4.2.1
 
 set -eE
 
@@ -55,6 +55,7 @@ SOFTWARE=/software/projects/mwasci/awaszewski/new_system/
 echo "${OBSID} Checking if data directory already exists"
 DATA="/scratch/mwasci/awaszewski/pipeline/${OBSID}/"
 if [ ! -d ${DATA} ]; then
+	echo "${OBSID} creating data directory"
 	mkdir ${DATA}
 fi
 # I'm aware that if a data directory already exists, its probably been processed previously but easier to check with log
@@ -67,7 +68,8 @@ CAL_SKIP=FALSE
 echo "${OBSID} Checking if observation is initialised in log"
 output=$(python read_log.py -l ${LOG} -o ${OBSID})
 
-if [[ -z "$output" ]]; then
+if [ -z "$output" ]; then
+	echo "${OBSID} initialising observation in log"
 	python update_log.py -l ${LOG} -o ${OBSID} --initialise
 else
 	stage=$(echo ${output} | cut -d "|" -f 3 | awk '{print $2}')
@@ -81,7 +83,7 @@ else
 		fi
 	fi
 
-	if [[ "$stage" == "Calibration" || "$status" == "Complete" ]]; then
+	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Imaging") ]]; then
 		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
 		cal_sols=${DATA}/${OBSID}_sols.fits
 		if [ -f ${cal_sols} ]; then
@@ -92,7 +94,8 @@ else
 
 	if [[ $ASVOID -ne 0 ]]; then
 		echo "${OBSID} has already been downloaded from ASVO. Checking if measurement set is available."
-		ms=/scratch/mwasci/asvo/${ASVOID}/${obsid}_ch121-132.ms/
+		ms=/scratch/mwasci/asvo/${ASVOID}/${OBSID}_ch121-132.ms/
+		echo ${ms}
 		if [ -d ${ms} ]; then
 			echo "${OBSID} measurement set available. Skipping ASVO download"
 			ASVO_SKIP=TRUE
@@ -101,14 +104,16 @@ else
 fi
 
 # ASVO staging
-if [ $ASVO_SKIP = FALSE]; then
-	./asvo.sh ${OBSID} ${LOG}
+if [ $ASVO_SKIP = FALSE ]; then
+	#./asvo.sh ${OBSID} ${LOG}
+	echo "ASVO"
 	ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
 fi
 
 # Calibration
-if [ $CAL_SKIP = FALSE]; then
-	./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
+if [ $CAL_SKIP = FALSE ]; then
+	echo "Calibration"
+	#./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 fi
 
 # Check data quality
@@ -116,12 +121,14 @@ echo "${OBSID} Checking data quality"
 frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
 resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
 echo "${OBSID} quality ${frac_bad} ${resid}"
+
 if [[ -z "$frac_bad" || -z "$resid" ]]; then
 	echo "${OBSID} Quality metrics don't exist"
 	exit 1
 fi
-if [ ${frac_bad} -gt 0.6 ]; then
-	if [ ${resid} -gt 20 ]; then
+
+if (( $(echo "$frac_bad > 0.6" | bc -l) )); then
+	if (( $(echo "$resid > 20" | bc -l) )); then
 		echo "${OBSID} Data quality does not meet requirements for further processing"
 		exit
 	fi
@@ -134,12 +141,13 @@ fi
 
 # Imaging
 # do i check if observation has already been imaged? if it has I probably wouldn't be running the pipeline on it
-./image.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
+echo "Imaging"
+bash ./image.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 
 # Acacia storage
 # move hdf5 to acacia separately in its own hdf5 directory
 # zip up the rest of the observation directory and shove it onto acacia
-./acacia.sh ${OBSID} ${DATA}
+#./acacia.sh ${OBSID} ${DATA}
 
 # Do we want to check when acacia transfer is done? 
 # Yes but I don't know how

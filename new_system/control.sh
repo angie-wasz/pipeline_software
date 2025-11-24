@@ -83,7 +83,7 @@ echo "Workflow Parameters"
 echo "OBSIDS 		= ${OBSIDS}"
 echo "NUM_PARALLEL 	= ${NUM_PARALLEL}"
 echo "SAFEMODE	= ${SAFEMODE}" 
-echo "CALIBRATE = ${CALIBRATE}"
+echo "CALIBRATE	= ${CALIBRATE}"
 echo "SKIP_FAIL_CHECK = ${SKIP_FAIL_CHECK}"
 echo " "
 
