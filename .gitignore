@@ -5,3 +5,5 @@ new_system/test_data/
 new_system/new_system_test.sqlite
 new_system/__pycache__/
 quality_scripts/__pycache__/
+imstack/__pycache__/
+pipeline_scripts/__pycache__/
