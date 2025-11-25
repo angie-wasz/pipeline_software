@@ -73,7 +73,7 @@ for s in np.argwhere(~t['ra'].mask)[:, 0]:
         t["pbcor"][s] = np.squeeze(imstack.pix2beam(x, y, avg_pol=False, scale=True))[1]
 
 f = lambda x: -imstack.pix2beam(int(x[0]), int(x[1]), scale=True)
-min_ = minimize(f, (1200, 1200), method='Nelder-Mead', options={'xatol': 1})
+min_ = minimize(f, (1200, 1200), method='Nelder-Mead', options={'xatol': 1}, bounds=((0,2399), (0, 2399))
 pbmax = -min_['fun']
 t["pbcor_norm"] = t["pbcor"]/pbmax
 
