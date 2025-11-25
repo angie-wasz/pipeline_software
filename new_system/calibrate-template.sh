@@ -15,11 +15,6 @@ module load python/3.11.6
 module load hyperdrive/0.6.1
 hyperdrive -V
 
-# OpenMP settings
-#export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
-#export OMP_PLACES=cores
-#export OMP_PROC_BIND=close
-
 # In case calibration fails
 trap 'python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
 

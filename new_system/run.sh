@@ -105,15 +105,15 @@ fi
 
 # ASVO staging
 if [ $ASVO_SKIP = FALSE ]; then
-	#./asvo.sh ${OBSID} ${LOG}
-	echo "ASVO"
+	bash ./asvo.sh ${OBSID} ${LOG}
+	#echo "ASVO"
 	ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
 fi
 
 # Calibration
 if [ $CAL_SKIP = FALSE ]; then
-	echo "Calibration"
-	#./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
+	#echo "Calibration"
+	bash ./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 fi
 
 # Check data quality

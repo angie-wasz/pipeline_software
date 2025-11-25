@@ -2,7 +2,8 @@
 
 import numpy as np
 import math
-from astropy.time import Time
+#from astropy.time import Time
+from datetime import datetime, timedelta
 from astropy.io import fits
 from aocal import fromfile
 import argparse
@@ -126,7 +127,9 @@ def do_quality_calc(path, obs):
     #print(obs)
     t = float(obs)
     #obsids.append(t)
-    timestr = Time(t, format='gps').utc.isot
+    #timestr = Time(t, format='gps').utc.isot
+    obstime = datetime(1980, 1, 6) + timedelta(seconds=(t - (37-19)))
+    timestr = datetime.strftime(obstime, "%Y-%m-%d %H:%M")
     #print(timestr[-1], end=' ')
     #f = f"{path}{obs}/{obs}_160.bin"
     f = f"{path}/{obs}_160.bin"
