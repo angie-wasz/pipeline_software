@@ -116,23 +116,24 @@ if [ $CAL_SKIP = FALSE ]; then
 	bash ./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 fi
 
-# Check data quality
-echo "${OBSID} Checking data quality"
-frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
-resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
-echo "${OBSID} quality ${frac_bad} ${resid}"
+######## Check data quality
+#FIXME: add this back in when running pipeline normally
+#echo "${OBSID} Checking data quality"
+#frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
+#resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
+#echo "${OBSID} quality ${frac_bad} ${resid}"
 
-if [[ -z "$frac_bad" || -z "$resid" ]]; then
-	echo "${OBSID} Quality metrics don't exist"
-	exit 1
-fi
+#if [[ -z "$frac_bad" || -z "$resid" ]]; then
+#	echo "${OBSID} Quality metrics don't exist"
+#	exit 1
+#fi
 
-if (( $(echo "$frac_bad > 0.6" | bc -l) )); then
-	if (( $(echo "$resid > 20" | bc -l) )); then
-		echo "${OBSID} Data quality does not meet requirements for further processing"
-		exit
-	fi
-fi
+#if (( $(echo "$frac_bad > 0.6" | bc -l) )); then
+#	if (( $(echo "$resid > 20" | bc -l) )); then
+#		echo "${OBSID} Data quality does not meet requirements for further processing"
+#		exit
+#	fi
+#fi
 
 if [ "$CALIBRATE" == "TRUE" ]; then
 	echo "${OBSID} As only calibration was chosen, workflow finishing now"

@@ -8,16 +8,21 @@ def main():
 	parser.add_argument("-o", "--obsid", type=int)
 	parser.add_argument("-l", "--log", type=str, required=True)
 	parser.add_argument("--quality", action='store_true')
+	parser.add_argument("--imaged", action='store_true')
 	args = parser.parse_args()
 
 	FILE = args.log
 
 	query = "SELECT * FROM Log"
 
+	if args.imaged:
+		query += ''' WHERE Stage="Imaging" OR Stage="Post-Image"'''
+	
 	if args.obsid is not None:
 		query += ''' WHERE OBSID=%d''' % (args.obsid)
 	else:
 		query += ''' ORDER BY OBSID ASC'''
+
 
 	con = lite.connect(FILE)
 	with con:
