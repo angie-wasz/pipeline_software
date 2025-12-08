@@ -72,10 +72,25 @@ for s in np.argwhere(~t['ra'].mask)[:, 0]:
     elif opts.pol == "YY":
         t["pbcor"][s] = np.squeeze(imstack.pix2beam(x, y, avg_pol=False, scale=True))[1]
 
-# something wrong with x??
-f = lambda x: -imstack.pix2beam(int(x[0]), int(x[1]), scale=True)
-print(x[0])
-min_ = minimize(f, (1200, 1200), method='Nelder-Mead', options={'xatol': 1}, bounds=[(0,2399), (0, 2399)])
+def f(x):	
+    if x[0] < 0:
+        x_0 = 0
+    elif x[0] > 2399:
+        x_0 = 2399
+    else:
+        x_0 = x[0]
+
+    if x[1] < 0:
+        x_1 = 0
+    elif x[1] > 2399:
+        x_1 = 2399
+    else:
+        x_1 = x[1]
+    return -imstack.pix2beam(int(x_0), int(x_1), scale=True)
+
+
+#f = lambda x: -imstack.pix2beam(int(x[0]), int(x[1]), scale=True)
+min_ = minimize(f, (1200, 1200), method='Nelder-Mead', options={'xatol': 1})#, bounds=[(0,2399), (0, 2399)])
 pbmax = -min_['fun']
 t["pbcor_norm"] = t["pbcor"]/pbmax
 
