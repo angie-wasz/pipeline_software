@@ -13,15 +13,16 @@ singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yam
 	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
 	--strict -o ${DATA}/${OBSID}-image.sh
 
-#singularity exec -B $PWD ${container} jinja2 postimage-template.sh pipeline-info.yaml --format=yaml \
-#	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
-#	--strict -o ${DATA}/${OBSID}-postimage.sh
+singularity exec -B $PWD ${container} jinja2 postimage-template.sh pipeline-info.yaml --format=yaml \
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
+	--strict -o ${DATA}/${OBSID}-postimage.sh
 
 python update_log.py -l ${LOG} -o ${OBSID} --stage Imaging --status Queued
 
 cd ${DATA}
 jobid=$(sbatch ${OBSID}-image.sh | cut -d " " -f 4)
-#sbatch --dependency=afterok:$jobid ${OBSID}-post-image.sh
+echo "${OBSID} Image job submitted ${jobid}"
+sbatch --dependency=afterok:$jobid ${OBSID}-postimage.sh
 cd ${SOFTWARE}
 
 sleep 1800

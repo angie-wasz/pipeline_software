@@ -17,19 +17,38 @@ POLS = ("XX", "YY")
 N_WARN=10
 N_FAIL=2
 
-def get_scale(in_cat, snr_thresh, pb_thresh):
-    cal = votable.parse_single_table(in_cat).to_table()
-    max_pb = np.max(cal['pbcor'])
-    good = (cal['snr'] > opts.snr_thresh) & (cal['pbcor'] > opts.pb_thresh*max_pb)
-    good = (good & ~cal['Fp162'].mask)
+#def get_scale(in_cat, snr_thresh, pb_thresh):
+#    cal = votable.parse_single_table(in_cat).to_table()
+#    max_pb = np.max(cal['pbcor'])
+#    good = (cal['snr'] > opts.snr_thresh) & (cal['pbcor'] > opts.pb_thresh*max_pb)
+#    good = (good & ~cal['Fp162'].mask)
 
-    cat = cal[good]
-    n = len(cat)
+#    cat = cal[good]
+#    n = len(cat)
     #scale = np.average(cat['peak_flux']/cat['pbcor']/cat['Fp162'])**-1
     #frac_err = np.std((cat['peak_flux']/cat['pbcor']/cat['Fp162'])**-1)/scale
-    scale = np.average(cat['peak_flux']/cat['pbcor']/cat['Fp162'])
-    frac_err = np.std((cat['peak_flux']/cat['pbcor']/cat['Fp162']))/scale
-    return scale, frac_err, n
+#    scale = np.average(cat['peak_flux']/cat['pbcor']/cat['Fp162'])
+#    frac_err = np.std((cat['peak_flux']/cat['pbcor']/cat['Fp162']))/scale
+#    return scale, frac_err, n
+
+def get_scale(in_cat, snr_thresh, pb_thresh):
+    cal = votable.parse_single_table(in_cat).to_table()
+    if len(cal)>1:
+        max_pb = np.max(cal['pbcor'])
+        good = (cal['snr'] > opts.snr_thresh) & (cal['pbcor'] > opts.pb_thresh*max_pb)
+        good = (good & ~cal['Fp162'].mask)
+        if np.sum(good)==0:
+            return 1.0, 0, 0
+
+        cat = cal[good]
+        n = len(cat)
+        #scale = np.average(cat['peak_flux']/cat['pbcor']/cat['Fp162'])**-1
+        #frac_err = np.std((cat['peak_flux']/cat['pbcor']/cat['Fp162'])**-1)/scale
+        scale = np.average(cat['peak_flux']/cat['pbcor']/cat['Fp162'])
+        frac_err = np.std((cat['peak_flux']/cat['pbcor']/cat['Fp162']))/scale
+        return scale, frac_err, n
+    else:
+        return 1.0, 0, 0
 
 if __name__ == '__main__':
     parser = OptionParser(usage="usage: obsid freq" +

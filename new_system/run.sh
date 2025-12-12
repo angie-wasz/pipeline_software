@@ -85,7 +85,8 @@ else
 
 	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Imaging") ]]; then
 		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
-		cal_sols=${DATA}/${OBSID}_sols.fits
+		#cal_sols=${DATA}/${OBSID}_sols.fits
+		cal_sols=${DATA}/${OBSID}_160.bin
 		if [ -f ${cal_sols} ]; then
 			echo "${OBSID} calibration solutions are available. Skipping calibration"
 			CAL_SKIP=TRUE
