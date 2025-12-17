@@ -12,11 +12,6 @@ set -exE
 
 module load singularity/4.1.0-slurm
 module load python/3.11.6
-#module load py-scipy/1.14.1
-#module load py-astropy/4.2.1
-#module load py-h5py/3.12.1
-#module load py-numpy/1.25.2
-module load py-mpi4py/4.0.1-py3.11.6
 
 trap 'python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
 
@@ -39,6 +34,8 @@ singularity exec -B $PWD {{container}} python ${scripts_dir}/abs_scale.py {{obsi
 
 
 # Moment images and measure noise
+module load py-scipy/1.14.1 py-astropy/5.1 py-h5py/3.12.1 py-mpi4py/4.0.1-py3.11.6
+
 mypath=$PATH
 mypythonpath=$PYTHONPATH
 srun --export=all -N 1 -n {{n_core}} python ${scripts_dir}/moment_image.py {{obsid}}.hdf5 -f {{freq}} --filter_lo --filter_hi --trim=900 --pol --n_moments=2
@@ -52,14 +49,21 @@ singularity exec -B $PWD {{container}} python ${scripts_dir}/measure_noise.py {{
 # Get final files
 singularity exec -B $PWD {{container}} python ${scripts_dir}/get_continuum.py --sigma {{obsid}}.hdf5 {{freq}} {{obsid}}_{{freq}}-image.fits
 
+module unload py-scipy/1.14.1 py-astropy/5.1 py-h5py/3.12.1 py-mpi4py/4.0.1-py3.11.6
+
 singularity exec -B $PWD {{gleam_container}} BANE --cores=1 --compress {{obsid}}_{{freq}}-image.fits
 singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}-image.vot {{obsid}}_{{freq}}-image.fits
+
+
+module load py-scipy/1.14.1 py-astropy/5.1 py-h5py/3.12.1 py-mpi4py/4.0.1-py3.11.6
 
 mypath=$PATH
 mypythonpath=$PYTHONPATH
 srun --export=all -N 1 -n {{n_core}} python ${scripts_dir}/moment_image.py {{obsid}}.hdf5 -f {{freq}} --filter_lo --filter_hi
 export PATH=$mypath
 export PYTHONPATH=$mypythonpath
+
+module unload py-scipy/1.14.1 py-astropy/5.1 py-h5py/3.12.1 py-mpi4py/4.0.1-py3.11.6
 
 singularity exec -B $PWD {{gleam_container}} BANE --cores 1 --compress {{obsid}}_{{freq}}_image_moment2.fits
 singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}_image_moment2.vot {{obsid}}_{{freq}}_image_moment2.fits
