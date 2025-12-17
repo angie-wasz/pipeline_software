@@ -12,12 +12,13 @@ set -exE
 
 module load singularity/4.1.0-slurm
 module load python/3.11.6
-module load py-h5py/3.12.1
 
 trap 'python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
+
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Running
 
 scripts_dir={{software}}/pipeline_scripts/
+
 
 # Continuum and abs scale
 {% for pol in pols %}
@@ -34,15 +35,15 @@ singularity exec -B $PWD {{container}} python ${scripts_dir}/abs_scale.py {{obsi
 
 
 # Moment images and measure noise
+#mypath=$PATH
+#mypythonpath=$PYTHONPATH
 module load py-scipy/1.14.1 py-astropy/5.1 py-mpi4py/4.0.1-py3.11.6
-mypath=$PATH
-mypythonpath=$PYTHONPATH
 srun --export=all -N 1 -n {{n_core}} python ${scripts_dir}/moment_image.py {{obsid}}.hdf5 -f {{freq}} --filter_lo --filter_hi --trim=900 --pol --n_moments=2
-module unload py-scipy/1.14.1 py-astropy/5.1 py-mpi4py/4.0.1-py3.11.6
 rm *moments.hdf5
+module unload py-scipy/1.14.1 py-astropy/5.1 py-mpi4py/4.0.1-py3.11.6
 
-export PATH=$mypath
-export PYTHONPATH=$mypythonpath
+#export PATH=$mypath
+#export PYTHONPATH=$mypythonpath
 singularity exec -B $PWD {{container}} python ${scripts_dir}/measure_noise.py {{obsid}}
 
 # Get final files
@@ -50,14 +51,14 @@ singularity exec -B $PWD {{container}} python ${scripts_dir}/get_continuum.py --
 singularity exec -B $PWD {{gleam_container}} BANE --cores=1 --compress {{obsid}}_{{freq}}-image.fits
 singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}-image.vot {{obsid}}_{{freq}}-image.fits
 
+#mypath=$PATH
+#mypythonpath=$PYTHONPATH
 module load py-scipy/1.14.1 py-astropy/5.1 py-mpi4py/4.0.1-py3.11.6
-mypath=$PATH
-mypythonpath=$PYTHONPATH
 srun --export=all -N 1 -n {{n_core}} python ${scripts_dir}/moment_image.py {{obsid}}.hdf5 -f {{freq}} --filter_lo --filter_hi
 module unload py-scipy/1.14.1 py-astropy/5.1 py-mpi4py/4.0.1-py3.11.6
 
-export PATH=$mypath
-export PYTHONPATH=$mypythonpath
+#export PATH=$mypath
+#export PYTHONPATH=$mypythonpath
 singularity exec -B $PWD {{gleam_container}} BANE --cores 1 --compress {{obsid}}_{{freq}}_image_moment2.fits
 singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}_image_moment2.vot {{obsid}}_{{freq}}_image_moment2.fits
 
