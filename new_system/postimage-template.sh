@@ -5,7 +5,7 @@
 #SBATCH --output={{obsid}}-postimage.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
-#SBATCH --time=00:30:00
+#SBATCH --time=00:20:00
 #SBATCH --export=NONE
 
 set -exE
@@ -13,7 +13,7 @@ set -exE
 module load singularity/4.1.0-slurm
 module load python/3.11.6
 
-trap 'python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
+trap 'module load python/3.11.6; python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
 
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Running
 
@@ -65,4 +65,5 @@ singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedc
 # I don't think we need the _beam.hdf5
 #python ${scripts_dir}/make_beam_only.py {{obsid}}.hdf5 {{obsid}}_beam.hdf5 -f 121-132
 
+module load python/3.11.6
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Complete

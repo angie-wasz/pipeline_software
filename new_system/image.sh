@@ -23,7 +23,8 @@ cd ${DATA}
 jobid=$(sbatch ${OBSID}-image.sh | cut -d " " -f 4)
 echo "${OBSID} Image job submitted ${jobid}"
 # no post image while im testing on galactic centre
-#sbatch --dependency=afterok:$jobid ${OBSID}-postimage.sh
+sbatch --dependency=afterok:$jobid ${OBSID}-postimage.sh
+#sbatch ${OBSID}-postimage.sh
 cd ${SOFTWARE}
 
 sleep 1800
@@ -44,6 +45,7 @@ while [ ${running} -eq 1 ]; do
         running=0
 
     fi
+
 done
 
 echo "${OBSID} Imaging and Post-imaging complete"

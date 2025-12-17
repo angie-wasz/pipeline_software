@@ -9,10 +9,10 @@ from optparse import OptionParser #NB zeus does not have argparse!
 
 IN_DIR="."
 
-#PB_THRESH = 0.9
-#SNR_THRESH = 10
-PB_THRESH = 0.7
-SNR_THRESH = 5
+PB_THRESH = 0.9
+SNR_THRESH = 10
+#PB_THRESH = 0.7
+#SNR_THRESH = 5
 
 N_POL=2
 POLS = ("XX", "YY")
