@@ -30,13 +30,15 @@ if [ ! -s {{obsid}}.metafits ]; then
 fi
 
 # calibration solutions should be in the directory
-cal_sol={{obsid}}_sols.fits
+#cal_sol={{obsid}}_sols.fits
+cal_sol={{obsid}}_160.bin
 
 # Change centre
 singularity exec -B $PWD {{gleam_container}} chgcentre -minw -shiftback ${ms}
 
 # Apply calibration solutions
 #applysolutions ${ms} ${cal_sol}
+# potentially have to shift back to apply solutions in a container if the ms is altered by chgcentre
 hyperdrive apply-solutions -d ${ms} -s ${cal_sol} -o {{obsid}}.ms
 ms={{obsid}}.ms
 

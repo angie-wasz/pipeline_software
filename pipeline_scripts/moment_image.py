@@ -3,7 +3,8 @@ import os
 from optparse import OptionParser #NB zeus does not have argparse!
 import numpy as np
 from astropy.io import fits
-from scipy.signal import butter, filtfilt, detrend, tukey
+from scipy.signal import butter, filtfilt, detrend
+from scipy.signal.windows import tukey
 from scipy.stats import skew, kurtosis
 import h5py
 from image_stack import ImageStack
@@ -168,9 +169,9 @@ if rank == 0:
         moments.attrs['DETREND'] = opts.detrend
         moments.attrs['WINDOW'] = opts.window
         moments.attrs['PBCOR'] = True if opts.pbcor else False
-        moments.attrs['TSSTART'] = np.int(imstack.steps[0])
-        moments.attrs['TSSTOP'] = np.int(imstack.steps[1])
-        moments.attrs['TRIM'] = np.int(opts.trim)
+        moments.attrs['TSSTART'] = int(imstack.steps[0])
+        moments.attrs['TSSTOP'] = int(imstack.steps[1])
+        moments.attrs['TRIM'] = int(opts.trim)
         moments.attrs['REMOVE0'] = True if opts.remove_zeros else False
         moments.attrs['DIFF1'] = True if opts.first_diff else False
 

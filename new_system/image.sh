@@ -22,7 +22,8 @@ python update_log.py -l ${LOG} -o ${OBSID} --stage Imaging --status Queued
 cd ${DATA}
 jobid=$(sbatch ${OBSID}-image.sh | cut -d " " -f 4)
 echo "${OBSID} Image job submitted ${jobid}"
-sbatch --dependency=afterok:$jobid ${OBSID}-postimage.sh
+# no post image while im testing on galactic centre
+#sbatch --dependency=afterok:$jobid ${OBSID}-postimage.sh
 cd ${SOFTWARE}
 
 sleep 1800
@@ -38,7 +39,7 @@ while [ ${running} -eq 1 ]; do
         echo "${OBSID} Imaging has failed"
         exit 1
 
-    elif [[ "$output" == *"Complete" ]]; then
+    elif [[ "$output" == *"Complete"* ]]; then
 
         running=0
 

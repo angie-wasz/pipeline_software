@@ -16,7 +16,7 @@ module load python/3.11.6
 #module load py-astropy/4.2.1
 #module load py-h5py/3.12.1
 #module load py-numpy/1.25.2
-#module load py-mpi4py/4.0.1-py3.11.6
+module load py-mpi4py/4.0.1-py3.11.6
 
 trap 'python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
 
