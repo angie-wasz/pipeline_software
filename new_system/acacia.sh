@@ -2,6 +2,8 @@ OBSID=$1
 DATA=$2
 SOFTWARE=$3
 
+module load singularity/4.1.0-slurm
+
 copyouts=/software/projects/mwasci/awaszewski/copyouts/obsids
 
 echo "${OBSID} Moving data to Acacia"
