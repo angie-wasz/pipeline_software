@@ -1,5 +1,6 @@
 OBSID=$1
 DATA=$2
+SOFTWARE=$3
 
 copyouts=/software/projects/mwasci/awaszewski/copyouts/obsids
 
@@ -15,8 +16,10 @@ singularity exec -B $PWD ${container} jinja2 acacia-template.sh acacia-info.yaml
 
 jobid=$(sbatch ${copyouts}/${OBSID}-hdf5-acacia.sh | cut -d " " -f 4)
 
+cd ${DATA}
 # tar up the remainder of the directory
 tar -cvf ${obsid}.tar ${DATA} --exclude=${DATA}/${OBSID}.hdf5
+cd ${SOFTWARE}
 
 FILES=${OBSID}.tar
 path=ips/data/
