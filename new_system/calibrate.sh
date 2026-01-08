@@ -9,20 +9,20 @@ container="/software/projects/mwasci/awaszewski/ips_post.img"
 
 echo "${OBSID} Calibration"
 
-singularity exec -B $PWD ${container} jinja2 calibrate-template.sh pipeline-info.yaml --format=yaml \
-	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
-	--strict -o ${DATA}/${OBSID}-calibrate.sh
+#singularity exec -B $PWD ${container} jinja2 calibrate-template.sh pipeline-info.yaml --format=yaml \
+#	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
+#	--strict -o ${DATA}/${OBSID}-calibrate.sh
 
-python update_log.py -l ${LOG} -o ${OBSID} --stage Calibration --status Queued
+#python update_log.py -l ${LOG} -o ${OBSID} --stage Calibration --status Queued
 
-cd ${DATA}
-sbatch ${OBSID}-calibrate.sh
-cd ${SOFTWARE}
+#cd ${DATA}
+#sbatch ${OBSID}-calibrate.sh
+#cd ${SOFTWARE}
 
 running=1
 while [ ${running} -eq 1 ]; do
     
-    sleep 300 #the typical amount of time it takes to calibrate + some queue time
+    #sleep 300 #the typical amount of time it takes to calibrate + some queue time
     output=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 4)
 
     if [[ "$output" == *"Failed"* ]]; then 
@@ -33,7 +33,9 @@ while [ ${running} -eq 1 ]; do
     elif [[ "$output" == *"Complete" ]]; then   
         
         running=0
-        singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
+		module load python/3.11.6
+        #singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
+		python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
 
     fi
 done

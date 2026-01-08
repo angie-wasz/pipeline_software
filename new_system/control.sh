@@ -7,6 +7,8 @@ Help()
 	echo "-n/--num-parallel : the number of jobs to run in parallel. Default is 8. Optional"
 	echo "-s/--safemode : if included, then data is not deleted from /scratch/asvo. CURRENTLY NOT IMPLEMENTED! Optional but recommended"
 	echo "-c/--calibrate : if included, then will only run calibration portion of pipeline"
+	echo "-i/--image : if included, then will only run imaging (no post imaging, still does ASVO and calibration checks)"
+	echo "-p/--post-image : if included, then will only run post-image (no imaging, still does ASVO and calibration checks)"
 	echo "--skip-fail-check : if included then it won't check if an observation has failed in the past (which by default is skipped)"
 	echo " "
 }
@@ -37,6 +39,12 @@ while [[ $# -gt 0 ]]; do
 			shift;;
 		--skip-fail-check)
 			SKIP_FAIL_CHECK=TRUE
+			shift;;
+		-i|--image)
+			IMAGE=TRUE
+			shift;;
+		-p|--post-image)
+			POSTIMAGE=TRUE
 			shift;;
 		-*|--*)
 			echo "Unknown option $1"
@@ -78,12 +86,17 @@ fi
 if [[ -z ${SKIP_FAIL_CHECK+x} ]]; then
 	SKIP_FAIL_CHECK=FALSE
 fi
+if [[ -z ${IMAGE+x} ]]; then
+	IMAGE=FALSE
+fi
+if [[ -z ${POSTIMAGE+x} ]]; then
+	POSTIMAGE=FALSE
+fi
 
 echo "Workflow Parameters"
 echo "OBSIDS 		= ${OBSIDS}"
 echo "NUM_PARALLEL 	= ${NUM_PARALLEL}"
 echo "SAFEMODE	= ${SAFEMODE}" 
-echo "CALIBRATE	= ${CALIBRATE}"
 echo "SKIP_FAIL_CHECK = ${SKIP_FAIL_CHECK}"
 echo " "
 
@@ -92,6 +105,6 @@ LOG=new_system_test.sqlite
 
 # Kick off the pipeline
 echo "Begin processing"
-cat ${OBSIDS} | xargs -P $NUM_PARALLEL -d $'\n' -n 1 bash ./run.sh --safemode ${SAFEMODE} --calibrate ${CALIBRATE} --skip-fail-check ${SKIP_FAIL_CHECK} -l ${LOG} -o 
+cat ${OBSIDS} | xargs -P $NUM_PARALLEL -d $'\n' -n 1 bash ./run.sh --safemode ${SAFEMODE} --calibrate ${CALIBRATE} --skip-fail-check ${SKIP_FAIL_CHECK} --image ${IMAGE} --post-image ${POSTIMAGE} -l ${LOG} -o 
 echo "Finished processing"
 

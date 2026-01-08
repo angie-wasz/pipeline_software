@@ -12,7 +12,6 @@
 set -euxEo pipefail
 
 module load python/3.11.6
-#module load wsclean/3.4-idg
 module load hyperdrive/0.6.1-cpu
 module load singularity/4.1.0-slurm
 
@@ -26,21 +25,27 @@ cp -r /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms ./{{obsid}}{{freq}}.m
 ms={{obsid}}{{freq}}.ms
 
 if [ ! -s {{obsid}}.metafits ]; then
-	cp /scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ./
+	if [ ! -s /scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ]; then
+		wget "http://ws.mwatelescope.org/metadata/fits?obs_id={{obsid}}" -qO {{obsid}}.metafits
+	else
+		cp /scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ./
+	fi
 fi
 
-# calibration solutions should be in the directory
-#cal_sol={{obsid}}_sols.fits
-cal_sol={{obsid}}_160.bin
+if [ ! -s {{obsid}}.metafits ]; then
+	echo "Metafits file doesn't exist, exitting program"
+	exit 1 
+fi
+
+cal_sol={{calsol}}
 
 # Change centre
 singularity exec -B $PWD {{gleam_container}} chgcentre -minw -shiftback ${ms}
 
 # Apply calibration solutions
-#applysolutions ${ms} ${cal_sol}
-# potentially have to shift back to apply solutions in a container if the ms is altered by chgcentre
-hyperdrive apply-solutions -d ${ms} -s ${cal_sol} -o {{obsid}}.ms
-ms={{obsid}}.ms
+singularity exec -B $PWD {{gleam_container}} applysolutions ${ms} ${cal_sol}
+#hyperdrive apply-solutions -d ${ms} -s ${cal_sol} -o {{obsid}}.ms
+#ms={{obsid}}.ms
 
 # Image full standard image
 singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_core}} -mem {{mem}} -name {{obsid}}_{{freq}} -pol xx,yy -size {{size}} {{size}} -join-polarizations -niter {{niter}} -minuv-l {{minuv_l}} -nmiter {{nmiter}} -mgain {{mgain}} -auto-threshold {{autothresh}} -auto-mask {{automask}} -taper-inner-tukey {{taper_inner_tukey}} -taper-gaussian {{taper}} -nwlayers {{n_core}} -scale {{scale}} -log-time ${ms}
@@ -62,9 +67,8 @@ singularity exec -B $PWD {{container}} python ${imstack}/add_continuum.py --over
 
 rm *-t0*
 rm -r {{obsid}}{{freq}}.ms
-rm -r {{obsid}}.ms
+#rm -r {{obsid}}.ms
 
 module load python/3.11.6
 
-python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Queued --stage Post-Image
-#python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Complete
+python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Done

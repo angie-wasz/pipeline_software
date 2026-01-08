@@ -65,5 +65,22 @@ singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedc
 # I don't think we need the _beam.hdf5
 #python ${scripts_dir}/make_beam_only.py {{obsid}}.hdf5 {{obsid}}_beam.hdf5 -f 121-132
 
+#remove unneccesary files
+rm {{obsid}}_121-132image_moment1-XX.fits \
+	{{obsid}}_121-132image_moment1-YY.fits \
+	{{obsid}}_121-132image_moment2-XX.fits \
+	{{obsid}}_121-132image_moment2-YY.fits \
+	{{obsid}}_121-132-XX-image_bkg.fits \
+	{{obsid}}_121-132-XX-image_cal.vot \
+	{{obsid}}_121-132-XX-image_comp.vot \
+	{{obsid}}_121-132-XX-image_rms.fits \
+	{{obsid}}_121-132-XX-image.vot \
+	{{obsid}}_121-132-YY-image_bkg.fits \
+	{{obsid}}_121-132-YY-image_cal.vot \
+	{{obsid}}_121-132-YY-image_comp.vot \
+	{{obsid}}_121-132-YY-image_rms.fits \
+	{{obsid}}_121-132-YY-image.vot \
+	{{obsid}}_image_moments.hdf5 
+
 module load python/3.11.6
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Complete

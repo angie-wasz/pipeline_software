@@ -28,7 +28,19 @@ cd {{obsid}}/
 
 # Get data
 cp -r /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms ./{{obsid}}.ms
-cp /scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ./
+
+if [ ! -s {{obsid}}.metafits ]; then
+	if [ ! -s scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ]; then
+		wget "http://ws.mwatelescope.org/metadata/fits?obs_id={{obsid}}" -qO {{obsid}}.metafits
+	else
+		cp /scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ./
+	fi
+fi
+
+if [ ! -s {{obsid}}.metafits ]; then
+	echo "Metafits file doesn't exist, exitting program"
+	exit 1 
+fi
 
 # MWA primary beam file
 export MWA_BEAM_FILE=/scratch/references/mwa/beam-models/mwa_full_embedded_element_pattern.h5

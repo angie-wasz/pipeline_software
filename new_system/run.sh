@@ -15,6 +15,14 @@ while [[ $# -gt 0 ]]; do
 			CALIBRATE="$2"
 			shift
 			shift;;
+		-i|--image)
+			IMAGE="$2"
+			shift
+			shift;;
+		-p|--post-image)
+			POSTIMAGE="$2"
+			shift
+			shift;;
 		--skip-fail-check)
 			SKIP_FAIL_CHECK="$2"
 			shift
@@ -50,6 +58,7 @@ fi
 sleep $(echo "scale=3; $RANDOM/32768*10" | bc)
 
 SOFTWARE=/software/projects/mwasci/awaszewski/new_system/
+SCRATCH=/scratch/mwasci/awaszewski/pipeline
 
 # Data storage
 echo "${OBSID} Checking if data directory already exists"
@@ -64,7 +73,6 @@ ASVO_SKIP=FALSE
 CAL_SKIP=FALSE
 
 # Start log
-# first check if it already exists
 echo "${OBSID} Checking if observation is initialised in log"
 output=$(python read_log.py -l ${LOG} -o ${OBSID})
 
@@ -83,23 +91,31 @@ else
 		fi
 	fi
 
-	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Imaging") ]]; then
+	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Image") ]]; then
 		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
-		#cal_sols=${DATA}/${OBSID}_sols.fits
-		cal_sols=${DATA}/${OBSID}_160.bin
+		cal_sols=${DATA}/${OBSID}_sols.fits
 		if [ -f ${cal_sols} ]; then
 			echo "${OBSID} calibration solutions are available. Skipping calibration"
 			CAL_SKIP=TRUE
+		else
+			cal_sols=${DATA}/${OBSID}_160.bin
+			if [ -f ${cal_sols} ]; then
+				echo "${OBSID} calibration solutions are available. Skipping calibration"
+				CAL_SKIP=TRUE
+			else
+				echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
+			fi
 		fi
 	fi
 
 	if [[ $ASVOID -ne 0 ]]; then
 		echo "${OBSID} has already been downloaded from ASVO. Checking if measurement set is available."
 		ms=/scratch/mwasci/asvo/${ASVOID}/${OBSID}_ch121-132.ms/
-		echo ${ms}
 		if [ -d ${ms} ]; then
 			echo "${OBSID} measurement set available. Skipping ASVO download"
 			ASVO_SKIP=TRUE
+		else
+			echo "${OBSID} measurement set does not exist. Proceeding with ASVO download"
 		fi
 	fi
 fi
@@ -107,34 +123,32 @@ fi
 # ASVO staging
 if [ $ASVO_SKIP = FALSE ]; then
 	bash ./asvo.sh ${OBSID} ${LOG}
-	#echo "ASVO"
 	ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
 fi
 
+CAL_SKIP=FALSE
 # Calibration
 if [ $CAL_SKIP = FALSE ]; then
-	#echo "Calibration"
 	bash ./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 fi
 
-######## Check data quality
-#FIXME: add this back in when running pipeline normally
-#echo "${OBSID} Checking data quality"
-#frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
-#resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
-#echo "${OBSID} quality ${frac_bad} ${resid}"
+# Data Quality (part of calibration)
+echo "${OBSID} Checking data quality"
+frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
+resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
+echo "${OBSID} quality ${frac_bad} ${resid}"
 
-#if [[ -z "$frac_bad" || -z "$resid" ]]; then
-#	echo "${OBSID} Quality metrics don't exist"
-#	exit 1
-#fi
+if [[ -z "$frac_bad" || -z "$resid" ]]; then
+	echo "${OBSID} Quality metrics don't exist"
+	exit 1
+fi
 
-#if (( $(echo "$frac_bad > 0.6" | bc -l) )); then
-#	if (( $(echo "$resid > 20" | bc -l) )); then
-#		echo "${OBSID} Data quality does not meet requirements for further processing"
-#		exit
-#	fi
-#fi
+if (( $(echo "$frac_bad > 0.6" | bc -l) )); then
+	if (( $(echo "$resid > 20" | bc -l) )); then
+		echo "${OBSID} Data quality does not meet requirements for further processing"
+		exit
+	fi
+fi
 
 if [ "$CALIBRATE" == "TRUE" ]; then
 	echo "${OBSID} As only calibration was chosen, workflow finishing now"
@@ -142,16 +156,38 @@ if [ "$CALIBRATE" == "TRUE" ]; then
 fi
 
 # Imaging
-# do i check if observation has already been imaged? if it has I probably wouldn't be running the pipeline on it
-echo "Imaging"
-bash ./image.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
+if [ "$IMAGE" == "TRUE" ]; then
+	echo "${OBSID} Only proceeding with imaging (no post image)"
+	STAGE="image"
+elif [ "$POSTIMAGE" == "TRUE" ]; then
+	echo "${OBSID} Only proceeding with post-imaging. Checking if images exist."
+	image_file=${DATA}/${OBSID}_121-132-XX-image.fits
+	if [ -f ${image_file} ]; then
+		echo "${OBSID} Images exist, proceeding with post-imaging"
+		STAGE="post"
+		## Would check if post-image has already been run, but hdf5 wouldn't work because of 121-132 column existing
+		#postimage_file=${DATA}/${OBSID}_121-132-image_comp.vot
+		#if [ -f ${postimage_file} ]; then
+		#	echo "${OBSID} Post-image has run before, overwriting files"
+		#	rm ${DATA}/*.vot
+	else
+		echo "${OBSID} Images do not exist, first running imaging"
+		STAGE="full"
+	fi
+else
+	echo "${OBSID} Proceeding with full image and post-image"
+	STAGE="full"
+fi
+
+bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}
+
+# check if image or post image has finished successfully
 
 # Acacia storage
-# move hdf5 to acacia separately in its own hdf5 directory
-# zip up the rest of the observation directory and shove it onto acacia
-#./acacia.sh ${OBSID} ${DATA}
+bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
 
 # Do we want to check when acacia transfer is done? 
 # Yes but I don't know how
+# For now it just spits out the job id for both transfers and hope for the best I guess
 
 echo "${OBSID} done"
