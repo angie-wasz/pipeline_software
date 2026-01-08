@@ -126,7 +126,6 @@ if [ $ASVO_SKIP = FALSE ]; then
 	ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
 fi
 
-CAL_SKIP=FALSE
 # Calibration
 if [ $CAL_SKIP = FALSE ]; then
 	bash ./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}

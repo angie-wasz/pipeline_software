@@ -23,33 +23,29 @@ if [[ ("${STAGE}" == "full") || ("${STAGE}" == "post") ]]; then
 		--strict -o ${DATA}/${OBSID}-postimage.sh
 fi
 
-cd ${DATA}
-
 if [[ ("${STAGE}" == "full") ]]; then
 
 	python update_log.py -l ${LOG} -o ${OBSID} --stage Imaging --status Queued
-	jobid=$(sbatch ${OBSID}-image.sh | cut -d " " -f 4)
-	sbatch --dependency=afterok:${jobid} ${OBSID}-postimage.sh
+	jobid=$(sbatch ${DATA}/${OBSID}-image.sh | cut -d " " -f 4)
+	sbatch --dependency=afterok:${jobid} ${DATA}/${OBSID}-postimage.sh
 	FINAL="Complete"
 
 elif [[ ("${STAGE}" == "image") ]]; then
 
 	python update_log.py -l ${LOG} -o ${OBSID} --stage Imaging --status Queued
-	sbatch ${OBSID}-image.sh
+	sbatch ${DATA}/${OBSID}-image.sh
 	FINAL="Done"
 
 elif [[ ("${STAGE}" == "post") ]]; then
 	
 	python update_log.py -l ${LOG} -o ${OBSID} --stage Post-Image --status Queued
-	sbatch ${OBSID}-postimage.sh
+	sbatch ${DATA}/${OBSID}-postimage.sh
 	FINAL="Complete"
 
 else
 	echo "${OBSID} stage passed incorrectly"
 	exit 1
 fi
-
-cd ${SOFTWARE}
 
 running=1
 while [ ${running} -eq 1 ]; do

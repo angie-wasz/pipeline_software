@@ -15,9 +15,7 @@ echo "${OBSID} Calibration"
 
 #python update_log.py -l ${LOG} -o ${OBSID} --stage Calibration --status Queued
 
-#cd ${DATA}
-#sbatch ${OBSID}-calibrate.sh
-#cd ${SOFTWARE}
+#sbatch ${DATA}/${OBSID}-calibrate.sh
 
 running=1
 while [ ${running} -eq 1 ]; do
@@ -33,9 +31,9 @@ while [ ${running} -eq 1 ]; do
     elif [[ "$output" == *"Complete" ]]; then   
         
         running=0
-		module load python/3.11.6
-        #singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
-		python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
+		module unload py-numpy/1.25.2 py-astropy/4.2.1
+        singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
+		module load py-numpy/1.25.2 py-astropy/4.2.1
 
     fi
 done
