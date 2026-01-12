@@ -2,7 +2,7 @@
 #SBATCH --account=mwasci
 #SBATCH --partition=mwa
 #SBATCH --job-name={{obsid}}_ips_postimage
-#SBATCH --output={{obsid}}-postimage.out
+#SBATCH --output={{data}}/{{obsid}}-postimage.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
 #SBATCH --time=00:20:00
@@ -19,6 +19,7 @@ python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} 
 
 scripts_dir={{software}}/pipeline_scripts/
 
+cd {{data}}
 
 # Continuum and abs scale
 {% for pol in pols %}

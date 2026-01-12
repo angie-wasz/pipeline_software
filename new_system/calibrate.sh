@@ -9,13 +9,13 @@ container="/software/projects/mwasci/awaszewski/ips_post.img"
 
 echo "${OBSID} Calibration"
 
-#singularity exec -B $PWD ${container} jinja2 calibrate-template.sh pipeline-info.yaml --format=yaml \
-#	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
-#	--strict -o ${DATA}/${OBSID}-calibrate.sh
+singularity exec -B $PWD ${container} jinja2 calibrate-template.sh pipeline-info.yaml --format=yaml \
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D output=${DATA}/${OBSID}-calibrate.out \
+	--strict -o ${DATA}/${OBSID}-calibrate.sh
 
-#python update_log.py -l ${LOG} -o ${OBSID} --stage Calibration --status Queued
+python update_log.py -l ${LOG} -o ${OBSID} --stage Calibration --status Queued
 
-#sbatch ${DATA}/${OBSID}-calibrate.sh
+sbatch ${DATA}/${OBSID}-calibrate.sh
 
 running=1
 while [ ${running} -eq 1 ]; do

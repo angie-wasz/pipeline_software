@@ -11,15 +11,17 @@ container="/software/projects/mwasci/awaszewski/ips_post.img"
 
 echo "${OBSID} Imaging and Post-imaging"
 
+CAL_SOLS=${DATA}/${OBSID}_160.bin
+
 if [[ ("${STAGE}" == "full") || ("${STAGE}" == "image") ]]; then
 	singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
-		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D calsol=${CAL_SOLS}\
+		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D calsol=${CAL_SOLS} -D data=${DATA} \
 		--strict -o ${DATA}/${OBSID}-image.sh
 fi
 
 if [[ ("${STAGE}" == "full") || ("${STAGE}" == "post") ]]; then
 	singularity exec -B $PWD ${container} jinja2 postimage-template.sh pipeline-info.yaml --format=yaml \
-		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} \
+		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D data=${DATA}\
 		--strict -o ${DATA}/${OBSID}-postimage.sh
 fi
 
@@ -48,6 +50,7 @@ else
 fi
 
 running=1
+loops=0
 while [ ${running} -eq 1 ]; do
 
     sleep 600
@@ -63,7 +66,17 @@ while [ ${running} -eq 1 ]; do
         running=0
 
     fi
-
+	
+	if [[ "$output" == *"Running"* ]]; then
+		# Tracking how long the observation has been processing for
+		let "loops++"
+		if [ ${loops} -gt 35 ]; then
+			echo "${OBSID} Imaging has timed-out and failed"
+			python update_log.py -l ${LOG} -o ${OBSID} --status Failed
+			exit 1
+		fi
+	fi
+	
 done
 
 echo "${OBSID} Imaging and Post-imaging complete"

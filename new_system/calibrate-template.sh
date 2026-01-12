@@ -2,7 +2,7 @@
 #SBATCH --account=mwasci-gpu
 #SBATCH --partition=mwa-gpu
 #SBATCH --job-name={{obsid}}_ips_cal
-#SBATCH --output={{obsid}}-cal.out
+#SBATCH --output={{output}}
 #SBATCH --nodes=1
 #SBATCH --time=00:10:00
 #SBATCH --gres=gpu:1

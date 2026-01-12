@@ -179,11 +179,12 @@ else
 fi
 
 bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}
-
-# check if image or post image has finished successfully
+# Imaging/Post-imaging is checked if successful when it's run
 
 # Acacia storage
-bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
+if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
+	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
+fi
 
 # Do we want to check when acacia transfer is done? 
 # Yes but I don't know how

@@ -2,7 +2,7 @@
 #SBATCH --account=mwasci
 #SBATCH --partition=mwa
 #SBATCH --job-name={{obsid}}_ips_image
-#SBATCH --output={{obsid}}-image.out
+#SBATCH --output={{data}}/{{obsid}}-image.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
 #SBATCH --mem=50G
@@ -20,6 +20,8 @@ trap 'python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Running 
 
 imstack={{software}}/imstack/
+
+cd {{data}}
 
 cp -r /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms ./{{obsid}}{{freq}}.ms
 ms={{obsid}}{{freq}}.ms
