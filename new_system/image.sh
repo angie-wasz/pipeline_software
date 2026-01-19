@@ -7,11 +7,10 @@ SOFTWARE=$6
 LOG=$7
 
 module load singularity/4.1.0-slurm
+module load python/3.11.6
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 
 echo "${OBSID} Imaging and Post-imaging"
-
-CAL_SOLS=${DATA}/${OBSID}_160.bin
 
 if [[ ("${STAGE}" == "full") || ("${STAGE}" == "image") ]]; then
 	singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
@@ -27,20 +26,20 @@ fi
 
 if [[ ("${STAGE}" == "full") ]]; then
 
-	python update_log.py -l ${LOG} -o ${OBSID} --stage Imaging --status Queued
+	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Imaging --status Queued
 	jobid=$(sbatch ${DATA}/${OBSID}-image.sh | cut -d " " -f 4)
 	sbatch --dependency=afterok:${jobid} ${DATA}/${OBSID}-postimage.sh
 	FINAL="Complete"
 
 elif [[ ("${STAGE}" == "image") ]]; then
 
-	python update_log.py -l ${LOG} -o ${OBSID} --stage Imaging --status Queued
+	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Imaging --status Queued
 	sbatch ${DATA}/${OBSID}-image.sh
 	FINAL="Done"
 
 elif [[ ("${STAGE}" == "post") ]]; then
 	
-	python update_log.py -l ${LOG} -o ${OBSID} --stage Post-Image --status Queued
+	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Post-Image --status Queued
 	sbatch ${DATA}/${OBSID}-postimage.sh
 	FINAL="Complete"
 
@@ -54,7 +53,7 @@ loops=0
 while [ ${running} -eq 1 ]; do
 
     sleep 600
-    output=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 4)
+    output=$(python read_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} | cut -d "|" -f 4)
 
     if [[ "$output" == *"Failed"* ]]; then
 
@@ -72,7 +71,7 @@ while [ ${running} -eq 1 ]; do
 		let "loops++"
 		if [ ${loops} -gt 35 ]; then
 			echo "${OBSID} Imaging has timed-out and failed"
-			python update_log.py -l ${LOG} -o ${OBSID} --status Failed
+			python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --status Failed
 			exit 1
 		fi
 	fi

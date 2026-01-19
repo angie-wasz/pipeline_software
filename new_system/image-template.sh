@@ -17,13 +17,15 @@ module load singularity/4.1.0-slurm
 
 trap 'python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
 
+sleep $(echo "scale=3; $RANDOM/32768*30" | bc)
+
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Running 
 
 imstack={{software}}/imstack/
 
 cd {{data}}
 
-cp -r /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms ./{{obsid}}{{freq}}.ms
+rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms/ ./{{obsid}}{{freq}}.ms
 ms={{obsid}}{{freq}}.ms
 
 if [ ! -s {{obsid}}.metafits ]; then

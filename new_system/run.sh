@@ -90,33 +90,33 @@ else
 			exit
 		fi
 	fi
-
-	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Image") ]]; then
-		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
-		cal_sols=${DATA}/${OBSID}_sols.fits
-		if [ -f ${cal_sols} ]; then
-			echo "${OBSID} calibration solutions are available. Skipping calibration"
-			CAL_SKIP=TRUE
-		else
-			cal_sols=${DATA}/${OBSID}_160.bin
-			if [ -f ${cal_sols} ]; then
-				echo "${OBSID} calibration solutions are available. Skipping calibration"
-				CAL_SKIP=TRUE
-			else
-				echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
-			fi
-		fi
-	fi
-
+	
 	if [[ $ASVOID -ne 0 ]]; then
 		echo "${OBSID} has already been downloaded from ASVO. Checking if measurement set is available."
-		ms=/scratch/mwasci/asvo/${ASVOID}/${OBSID}_ch121-132.ms/
-		if [ -d ${ms} ]; then
+		ms=/scratch/mwasci/asvo/${ASVOID}/${OBSID}_ch121-132.ms/table.dat
+		if [ -f ${ms} ]; then
 			echo "${OBSID} measurement set available. Skipping ASVO download"
 			ASVO_SKIP=TRUE
 		else
 			echo "${OBSID} measurement set does not exist. Proceeding with ASVO download"
 		fi
+	fi
+
+	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Image") ]]; then
+		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
+		#cal_sols=${DATA}/${OBSID}_sols.fits
+		#if [ -f ${cal_sols} ]; then
+		#	echo "${OBSID} calibration solutions are available. Skipping calibration"
+		#	CAL_SKIP=TRUE
+		#else
+		cal_sols=${DATA}/${OBSID}_160.bin
+		if [ -f ${cal_sols} ]; then
+			echo "${OBSID} calibration solutions are available. Skipping calibration"
+			CAL_SKIP=TRUE
+		else
+			echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
+		fi
+		#fi
 	fi
 fi
 

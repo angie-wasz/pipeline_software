@@ -20,7 +20,7 @@ sbatch ${DATA}/${OBSID}-calibrate.sh
 running=1
 while [ ${running} -eq 1 ]; do
     
-    #sleep 300 #the typical amount of time it takes to calibrate + some queue time
+    sleep 300 #the typical amount of time it takes to calibrate + some queue time
     output=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 4)
 
     if [[ "$output" == *"Failed"* ]]; then 

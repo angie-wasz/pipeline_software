@@ -27,7 +27,7 @@ mkdir {{obsid}}
 cd {{obsid}}/
 
 # Get data
-cp -r /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms ./{{obsid}}.ms
+rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms/ ./{{obsid}}.ms
 
 if [ ! -s {{obsid}}.metafits ]; then
 	if [ ! -s scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ]; then
