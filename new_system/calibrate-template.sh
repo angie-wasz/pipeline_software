@@ -26,8 +26,8 @@ cd /tmp
 mkdir {{obsid}}
 cd {{obsid}}/
 
-# Get data
-rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms/ ./{{obsid}}.ms
+echo "DATE"
+date -Iseconds
 
 if [ ! -s {{obsid}}.metafits ]; then
 	if [ ! -s scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ]; then
@@ -45,6 +45,16 @@ fi
 # MWA primary beam file
 export MWA_BEAM_FILE=/scratch/references/mwa/beam-models/mwa_full_embedded_element_pattern.h5
 
+echo "DATE"
+date -Iseconds
+
+
+
+# 121-132 calibration
+
+# Get data
+rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms/ ./{{obsid}}.ms
+
 # Calibration
 hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
 	-s {{skymodel}} \
@@ -56,17 +66,43 @@ hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
 # Plot solutions
 hyperdrive plot-solutions {{obsid}}_sols.fits
 
+echo "DATE"
+date -Iseconds
+
 # Convert solutions into bin files
 hyperdrive solutions-convert {{obsid}}_sols.fits {{obsid}}_160.bin
 
+
+
+# 57-68 calibration
+
+rm -r {{obsid}}.ms
+
+rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch57-68.ms/ ./{{obsid}}.ms
+
+hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
+	-s {{skymodel}} \
+	--num-sources {{sources}} \
+	--uvw-min {{uvwmin}} \
+	--uvw-max {{uvwmax}} \
+	-o {{obsid}}_57-68_sols.fits
+
+hyperdrive plot-solutions {{obsid}}_57-68_sols.fits
+
+hyperdrive solutions-convert {{obsid}}_57-68_sols.fits {{obsid}}_57-68_160.bin
+
+
+# Clean up
+
 # Transfer data back to scratch
 rsync -av {{obsid}}_sols.fits \
+	{{obsid}}_57-68_sols.fits \
 	{{obsid}}*.png \
 	{{obsid}}_160.bin \
+	{{obsid}}_57-68_160.bin \
 	{{obsid}}.metafits \
 	{{pipeline}}/{{obsid}}/
 
-# Clean up
 cd ../
 rm -r {{obsid}}/
 

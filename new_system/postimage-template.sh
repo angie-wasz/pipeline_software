@@ -21,6 +21,9 @@ scripts_dir={{software}}/pipeline_scripts/
 
 cd {{data}}
 
+echo "DATE"
+date -Iseconds
+
 # Continuum and abs scale
 {% for pol in pols %}
 
@@ -34,6 +37,8 @@ singularity exec -B $PWD,{{software}} {{container}} python ${scripts_dir}/match_
 
 singularity exec -B $PWD {{container}} python ${scripts_dir}/abs_scale.py {{obsid}} {{freq}}
 
+echo "DATE"
+date -Iseconds
 
 # Moment images and measure noise
 #mypath=$PATH
@@ -52,6 +57,9 @@ singularity exec -B $PWD {{container}} python ${scripts_dir}/get_continuum.py --
 singularity exec -B $PWD {{gleam_container}} BANE --cores=1 --compress {{obsid}}_{{freq}}-image.fits
 singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}-image.vot {{obsid}}_{{freq}}-image.fits
 
+echo "DATE"
+date -Iseconds
+
 #mypath=$PATH
 #mypythonpath=$PYTHONPATH
 module load py-scipy/1.14.1 py-astropy/5.1 py-mpi4py/4.0.1-py3.11.6
@@ -65,6 +73,9 @@ singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedc
 
 # I don't think we need the _beam.hdf5
 #python ${scripts_dir}/make_beam_only.py {{obsid}}.hdf5 {{obsid}}_beam.hdf5 -f 121-132
+
+echo "DATE"
+date -Iseconds
 
 #remove unneccesary files
 rm {{obsid}}_121-132image_moment1-XX.fits \
