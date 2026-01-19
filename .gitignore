@@ -7,3 +7,6 @@ new_system/__pycache__/
 quality_scripts/__pycache__/
 imstack/__pycache__/
 pipeline_scripts/__pycache__/
+apply_solutions_tests/
+copyouts/obsids/
+image_80/
