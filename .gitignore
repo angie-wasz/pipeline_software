@@ -4,9 +4,11 @@ setonix/
 new_system/test_data/
 new_system/new_system_test.sqlite
 new_system/__pycache__/
+new_system/obs_lists/
 quality_scripts/__pycache__/
 imstack/__pycache__/
 pipeline_scripts/__pycache__/
 apply_solutions_tests/
 copyouts/obsids/
 image_80/
+double_source/
