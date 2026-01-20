@@ -79,8 +79,8 @@ rm ./*-psf.fits
 # hdf5 file
 module load py-scipy/1.14.1 py-astropy/4.2.1 py-h5py/3.12.1 py-numpy/1.25.2
 python ${imstack}/make_imstack2.py -vvn 400 --start=0 --suffixes=image --outfile={{obsid}}.hdf5 --skip_beam --allow_missing {{obsid}} --bands={{freq}}
-
 module unload py-numpy/1.25.2 py-h5py/3.12.1 py-scipy/1.14.1 py-astropy/4.2.1
+
 singularity exec -B $PWD {{container}} python ${imstack}/lookup_beam_imstack.py {{obsid}}.hdf5 {{obsid}}.metafits {{freq}} --beam_path={{software}}/hdf5/gleam_xx_yy.hdf5 -v
 singularity exec -B $PWD {{container}} python ${imstack}/add_continuum.py --overwrite {{obsid}}.hdf5 {{obsid}} {{freq}} image
 

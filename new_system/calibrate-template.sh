@@ -49,13 +49,9 @@ echo "DATE"
 date -Iseconds
 
 
-
 # 121-132 calibration
-
-# Get data
 rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms/ ./{{obsid}}.ms
 
-# Calibration
 hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
 	-s {{skymodel}} \
 	--num-sources {{sources}} \
@@ -63,21 +59,18 @@ hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
 	--uvw-max {{uvwmax}} \
 	-o {{obsid}}_sols.fits
 
-# Plot solutions
+rm -r {{obsid}}.ms
+
+
 hyperdrive plot-solutions {{obsid}}_sols.fits
+
+hyperdrive solutions-convert {{obsid}}_sols.fits {{obsid}}_160.bin
 
 echo "DATE"
 date -Iseconds
 
-# Convert solutions into bin files
-hyperdrive solutions-convert {{obsid}}_sols.fits {{obsid}}_160.bin
-
-
 
 # 57-68 calibration
-
-rm -r {{obsid}}.ms
-
 rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch57-68.ms/ ./{{obsid}}.ms
 
 hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \

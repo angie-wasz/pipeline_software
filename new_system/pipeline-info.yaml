@@ -11,9 +11,6 @@ sources: 250
 uvwmin: 130m
 uvwmax: 2600m
 freq: 121-132
-timesteps: "{320..880}"
-files162: "{121..132}" # NOTE: this only works for observations taken after 01-Jan-2023, for prior observations use "{13..24}"
-# for calibrator observations (non-IPS) use "{109..132}"
 pols:
   - XX
   - YY
