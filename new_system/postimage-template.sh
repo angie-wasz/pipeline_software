@@ -35,7 +35,7 @@ singularity exec -B $PWD,{{software}} {{container}} python ${scripts_dir}/match_
 
 {% endfor %}
 
-singularity exec -B $PWD {{container}} python ${scripts_dir}/abs_scale.py {{obsid}} {{freq}}
+singularity exec -B $PWD {{container}} python ${scripts_dir}/abs_scale.py {{obsid}} {{freq}} --n_fail=0
 
 echo "DATE"
 date -Iseconds
