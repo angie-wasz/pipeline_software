@@ -181,6 +181,9 @@ fi
 bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}
 # Imaging/Post-imaging is checked if successful when it's run
 
+# creation of g-map, then save it
+# bash ./gmap.sh ${OBSID} 
+
 # Acacia storage
 if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
 	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
