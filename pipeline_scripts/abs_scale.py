@@ -100,6 +100,8 @@ if __name__ == '__main__':
             raise RuntimeError("Can't get reliable solution from %s: Only %d sources" % (in_file, n))
         if n < opts.n_warn:
             logging.warn("only %d sources!", n)
+    if scales[0]==1.0 or scales[1]==1.0:
+       scales = np.array([1.0, 1.0])
 
     if opts.csv:
         if opts.csvfile is None:
