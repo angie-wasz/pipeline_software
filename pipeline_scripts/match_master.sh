@@ -7,7 +7,7 @@ set -euo pipefail
 # $5 RA column of master catalogue
 # $6 DEC column of master catalogue
 
-topcat -stilts tmatch2 \
+singularity stilts tmatch2 \
         in1=$1 \
         in2=$2 \
 	icmd2='keepcols "ra_corr dec_corr a b pa uuid elongation peak_flux local_rms snr snr_scint dS2 err_dS2 peak_flux2 local_rms2"' \

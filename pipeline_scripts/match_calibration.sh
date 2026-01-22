@@ -6,9 +6,11 @@ case $3 in
 	121-132)centroid=162;;
 esac
 
+gleam_container=/software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img
+
 echo
 echo find all matches for input file and record all rows for input file
-topcat -stilts tmatch2 \
+singularity exec -B $PWD ${gleam_container} stilts tmatch2 \
         in1=$1 \
         in2=$2 \
 	icmd2='colmeta -name ra $1' \
@@ -25,7 +27,7 @@ topcat -stilts tmatch2 \
 
 echo
 echo find all matches for input file and record only rows with matches
-topcat -stilts tmatch2 \
+singularity exec -B $PWD ${gleam_container} stilts tmatch2 \
         in1=$1 \
         in2=$2 \
 	icmd2='colmeta -name ra $1' \
@@ -43,7 +45,7 @@ topcat -stilts tmatch2 \
 echo
 echo mark all rows with more than one match as complex in final catalogue
 echo or just add empty columns
-topcat -stilts tmatch2 \
+singularity exec -B $PWD ${gleam_container} stilts tmatch2 \
 	in1=${1%.vot}_cal.vot \
 	in2=${1%.vot}_cal_all.vot \
 	icmd1='colmeta -name Separation_cat Separation' \
@@ -59,7 +61,7 @@ topcat -stilts tmatch2 \
 	ocmd="addcol complex !NULL_GroupID_1||!NULL_GroupID_1" \
 	ocmd='delcols "uuid_1 GroupID GroupSize GroupID_1 GroupSize_1"' \
 	ocmd='keepcols "ra err_ra dec err_dec peak_flux local_rms snr pbcor pbcor_norm ra_cat dec_cat Fp080 Fp162 Separation_cat complex GroupID GroupSize uuid"' \
-	out=${4} || topcat -stilts tpipe \
+	out=${4} || singularity exec -B $PWD ${gleam_container} stilts tpipe \
         in=${1%.vot}_cal.vot \
 	cmd='colmeta -name Separation_cat Separation' \
 	cmd="addcol complex false" \
@@ -80,7 +82,7 @@ fi
 
 echo
 echo #record flux ratio
-topcat -stilts tpipe \
+singularity exec -B $PWD ${gleam_container} stilts tpipe \
         in=$4 \
 	cmd="select '!complex'" \
 	cmd='select "pbcor_norm>0.5"' \

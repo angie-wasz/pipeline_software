@@ -14,8 +14,11 @@ from numpy.linalg import norm
 from astropy.io import fits
 from astropy.table import Table
 from astropy.wcs import WCS
+from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord
 from astropy import units as u
+
+print(matplotlib.__version__)
 
 def transform_rbf(p, q, v, alpha=1):
     w = norm((p - v), axis=1) ** (-2 * alpha) # figure out the weights for the different sources
@@ -96,7 +99,7 @@ hc3 = tabarray[args.beam][~fit] > 0.1
 
 fig = plt.figure(figsize=(6, 6), dpi=160)
 #ax = plt.gca()
-wcs = WCS(header).celestial
+wcs = WCS(header)
 ax = fig.add_subplot(111, projection=wcs)
 ax.quiver(p[h1, 0], p[h1, 1], d[h1, 0], d[h1, 1], color=C[0], angles='xy',scale_units='xy', scale=1/60.)
 ax.quiver(p[h2&~h1, 0], p[h2&~h1, 1], d[h2&~h1, 0], d[h2&~h1, 1], color=C[1], angles='xy', scale_units='xy', scale=1/60.)
