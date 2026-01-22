@@ -1,0 +1,15 @@
+FREQ=121-132
+PIPELINE=${scripts_dir}
+CAT_PATH=/software/projects/mwasci/awaszewski/catalogs/
+CONTINUUM=image
+VARIABILITY=image_moment2
+
+SH=/bin/bash
+PYTHON=python
+
+
+#############################################
+## match with calibrator catalogue
+#############################################
+$(OBSID)_$(FREQ)_cal.vot : $(OBSID)_$(FREQ)_image.vot
+	$(SH) $(PIPELINE)/match_calibration.sh $(OBSID)_$(FREQ)_image.vot $(CAT_PATH)/ips_continuum_cal.fits $(FREQ) $(OBSID)_$(FREQ)_cal.vot

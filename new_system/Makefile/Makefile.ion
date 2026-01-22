@@ -7,7 +7,7 @@ VARIABILITY=image_moment2
 SH=/bin/bash
 PYTHON=python
 
-all: $(OBSID)_$(FREQ)_$(CONTINUUM)_corr.vot $(OBSID)_$(FREQ)_$(VARIABILITY)_corr.vot $(OBSID)_$(FREQ)_ionplot.png 
+all: $(OBSID)_$(FREQ)_$(CONTINUUM)_corr.vot $(OBSID)_$(FREQ)_$(VARIABILITY)_corr.vot
 
 ##############################
 ## add ionospheric corrections
@@ -19,15 +19,11 @@ $(OBSID)_$(FREQ)_$(CONTINUUM)_corr.vot : $(OBSID)_$(FREQ)_ion.vot $(OBSID)_$(FRE
 	$(PYTHON) $(PIPELINE)/RBF_correct.py $(OBSID)_$(FREQ)_ion.vot $(OBSID)_$(FREQ)-image.fits $(OBSID)_$(FREQ)_$(CONTINUUM).vot $(OBSID)_$(FREQ)_$(CONTINUUM)_corr.vot
 
 ## ionospheric plots
-$(OBSID)_$(FREQ)_ionplot.png : $(OBSID)_$(FREQ)_ion.vot $(OBSID)_$(FREQ)_$(VARIABILITY).fits
-	$(PYTHON) $(PIPELINE)/RBF_ionosphere_plots.py $(OBSID)_$(FREQ)_ion.vot $(OBSID)_$(FREQ)_$(VARIABILITY).fits
-	$(SH) $(PIPELINE)/montage_ionplots.sh $(OBSID)
+#$(OBSID)_$(FREQ)_ionplot.png : $(OBSID)_$(FREQ)_ion.vot $(OBSID)_$(FREQ)_$(VARIABILITY).fits
+#	$(PYTHON) $(PIPELINE)/RBF_ionosphere_plots.py $(OBSID)_$(FREQ)_ion.vot $(OBSID)_$(FREQ)_$(VARIABILITY).fits
+#	$(SH) $(PIPELINE)/montage_ionplots.sh $(OBSID)
 
 $(OBSID)_$(FREQ)_ion.vot : $(OBSID)_$(FREQ)_cal.vot
-	$(PYTHON) $(PIPELINE)/RBF_generate.py $(OBSID)_$(FREQ)_cal.vot $(OBSID)_$(FREQ)-image.fits $(OBSID)_$(FREQ)_ion.vot
+	singularity exec -B $PWD /software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx-container.img $(PYTHON) $(PIPELINE)/RBF_generate.py $(OBSID)_$(FREQ)_cal.vot $(OBSID)_$(FREQ)-image.fits $(OBSID)_$(FREQ)_ion.vot
 
-#############################################
-## match with calibrator catalogue
-#############################################
-$(OBSID)_$(FREQ)_cal.vot : $(OBSID)_$(FREQ)_image.vot
-	$(SH) $(PIPELINE)/match_calibration.sh $(OBSID)_$(FREQ)_image.vot $(CAT_PATH)/ips_continuum_cal_tgss.fits $(FREQ) $(OBSID)_$(FREQ)_cal.vot
+
