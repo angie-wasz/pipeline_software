@@ -2,7 +2,7 @@
 software: /software/projects/mwasci/awaszewski/
 pipeline: /scratch/mwasci/awaszewski/pipeline/
 container: /software/projects/mwasci/awaszewski/ips_post.img
-gleam_container: /software/projects/mwasci/kross/GLEAM-X-pipeline/gleamx_container.img
+gleam_container: /software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img
 skymodel: /software/projects/mwasci/awaszewski/catalogs/GGSM.txt
 
 # Observation parameters
