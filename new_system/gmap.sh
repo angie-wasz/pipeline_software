@@ -30,17 +30,17 @@ cd ${DATA}
 
 singularity exec -B $PWD ${container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.posinterp -j 2
 
-singularity exec -B $PWD ${container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.ion -j 2
+#singularity exec -B $PWD ${container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.ion -j 2
 
-singularity exec -B $PWD ${container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.gleam -j 2
+#singularity exec -B $PWD ${container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.gleam -j 2
 
 # calculate g-levels
 ### might need to change it to not run on topcat
-bash ${scripts_dir}/glevel_vot.sh ${OBSID} ${DATA}
+#bash ${scripts_dir}/glevel_vot.sh ${OBSID} ${DATA}
 
 # create g-map
-singularity exec -B $PWD ${container} python ${scripts_dir}/make_gmap.py -o ${OBSID} -d ${DATA}
+#singularity exec -B $PWD ${container} python ${scripts_dir}/make_gmap.py -o ${OBSID} -d ${DATA}
 
-module load python 3.11.6
-python update_log.py -l ${LOG} -o ${OBSID} --status Complete
-echo "${OBSID} G-map created"
+#module load python 3.11.6
+#python update_log.py -l ${LOG} -o ${OBSID} --status Complete
+#echo "${OBSID} G-map created"
