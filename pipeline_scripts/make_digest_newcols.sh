@@ -1,4 +1,6 @@
-topcat -stilts tpipe \
+gleam_container=/software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img
+
+singulairty exec -B $PWD ${gleam_container} stilts tpipe \
 	in=$1 \
 	cmd='keepcols "GLEAM RAJ2000 DEJ2000 s_162 elongation2 sun_lat limb mpt1 mpt2 pbcor pbcor_norm ra_corr dec_corr peak_flux local_rms snr ra_corr_2  dec_corr_2 dS snr_2 Separation_2 dS2 local_rms2 snr_scint"' \
 	cmd='replacecol RAJ2000 toFloat(RAJ2000)' \

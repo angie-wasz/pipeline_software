@@ -7,7 +7,9 @@ set -euo pipefail
 # $5 RA column of master catalogue
 # $6 DEC column of master catalogue
 
-singularity stilts tmatch2 \
+gleam_container=/software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img
+
+singularity exec -B $PWD ${gleam_container} stilts tmatch2 \
         in1=$1 \
         in2=$2 \
 	icmd2='keepcols "ra_corr dec_corr a b pa uuid elongation peak_flux local_rms snr snr_scint dS2 err_dS2 peak_flux2 local_rms2"' \
@@ -21,7 +23,7 @@ singularity stilts tmatch2 \
 	find=best \
 	out=tmp.vot
 
-topcat -stilts tmatch2 \
+singularity exec -B $PWD ${gleam_container} stilts tmatch2 \
         in1=tmp.vot \
         in2=$3 \
 	icmd2='keepcols "ra_corr dec_corr dS err_dS a b pa uuid snr"' \
