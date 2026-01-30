@@ -1,7 +1,3 @@
-# make better version of gmap script, with updated colours and styles
-
-# new colour map
-
 import os, argparse
 import json, requests
 import numpy as np
@@ -40,23 +36,6 @@ def parse_args():
 
     return args
 
-def get_pointing(obsid):
-    result = requests.get(
-        "http://ws.mwatelescope.org/metadata/find",
-        data={"mintime": f"{obsid}", "maxtime": f"{obsid}"}
-    )
-
-    if result.text == "":
-        print("no observation")
-    try:
-        result_dict = json.loads(result.text)
-    except json.JSONDecodeError:
-        print("cant decode the following result --expecting valid json")
-        print(result.text)
-        raise
-
-    return result_dict[0][4], result_dict[0][5]
-
 def convert_to_solar(ra, dec, obstime):
     radec = SkyCoord(ra*u.deg, dec*u.deg, distance=1e9*u.parsec)
     helio = radec.transform_to(Helioprojective(obstime=obstime, observer='Earth'))
@@ -86,12 +65,6 @@ def main():
     ax.set_facecolor('gainsboro')
     ax.set_title(f"{obstime.iso}")
 
-    # get the pointing to position the axes
-    ra_pointing, dec_pointing = get_pointing(obs)
-    tx_pointing, ty_pointing = convert_to_solar(ra_pointing, dec_pointing, obstime)
-    ax.set_ylim([ty_pointing-25, ty_pointing+25])
-    ax.set_xlim([tx_pointing-25, tx_pointing+25])
-
     # g-level
     TAB = f"{dir}/{obs}_glevel_simplify.vot"
     if not os.path.exists(TAB):
@@ -114,6 +87,9 @@ def main():
     bar.minorticks_off()
     bar.set_ticks([vmin, median, vmax])
     bar.set_ticklabels(["{:.1f}".format(vmin), "{:.1f}".format(median), "{:.1f}".format(vmax)])
+
+    ax.set_xlim([min(tx)-5, max(tx)+5])
+    ax.set_ylim([min(tx)-5, max(tx)+5])
 
     fig.tight_layout()
     fig.savefig(f'{dir}/{obs}_gmap.png', bbox_inches='tight')
