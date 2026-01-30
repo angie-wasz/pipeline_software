@@ -46,7 +46,9 @@ def votable_to_pandas(votable_file):
     return table.to_pandas()
 
 def filtering_df(df):
-    return df[(df.snr_scint > 5)].reset_index(drop=True)
+    df = df[(df.snr_scint > 2)].reset_index(drop=True)
+    df = df[(df.g > 0)].reset_index(drop=True)
+    return df
 
 def main():
     args = parse_args()
@@ -54,7 +56,7 @@ def main():
     obs = args.obsid
     dir = args.dir
 
-    obstime = Time(obs, scale='gps')
+    obstime = Time(obs, format='gps')
 
     # create the gmap
     fig, ax = plt.subplots(1,1, figsize=(6,5), dpi=150)
@@ -71,14 +73,19 @@ def main():
         exit(1)
     df = filtering_df(votable_to_pandas(TAB))
 
-    ra, dec, snr, g = df.RAJ2000.to_numpy(), df.DEJ2000.to_numpy(), df.snr_scint.to_numpy(), df.g.to_numpy()
+    ra, dec, g = df.RAJ2000_1.to_numpy(), df.DEJ2000_1.to_numpy(), df.g.to_numpy()
     tx, ty = convert_to_solar(ra, dec, obstime)
+    
+    ax.set_xlim([min(tx)-10, max(tx)+10])
+    ax.set_ylim([min(ty)-10, max(ty)+10])
 
+    print(len(tx), len(ty), len(g))
+    
     ax.scatter(0,0, marker='*', c='tab:orange', s=100)
     field = ax.scatter(tx, ty, c=g, marker='o',
                         cmap=cm,
                         norm=norm,
-                        s=25,
+                        s=20,
                         edgecolors='dimgrey',
                         linewidths=0.2)
     
@@ -86,9 +93,6 @@ def main():
     bar.minorticks_off()
     bar.set_ticks([vmin, median, vmax])
     bar.set_ticklabels(["{:.1f}".format(vmin), "{:.1f}".format(median), "{:.1f}".format(vmax)])
-
-    ax.set_xlim([min(tx)-5, max(tx)+5])
-    ax.set_ylim([min(tx)-5, max(tx)+5])
 
     fig.tight_layout()
     fig.savefig(f'{dir}/{obs}_gmap.png', bbox_inches='tight')
