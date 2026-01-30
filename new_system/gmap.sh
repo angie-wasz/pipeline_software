@@ -19,12 +19,13 @@ module load python/3.11.6
 comp_file=${DATA}/${OBSID}_121-132-image_comp.vot
 if [ -f ${comp_file} ]; then
 	echo "${OBSID} Required files exist, continuing with creation of g-map"
-	python update_log.py -l ${LOG} -o ${OBSID} --stage G-map --status Running	
+	python update_log.py -l ${LOG} -o ${OBSID} --stage g-level --status Running	
 else
 	echo "${OBSID} Required files for g-map creation do not exist, exitting workflow"
-	python update_log.py -l ${LOG} -o ${OBSID} --stage G-map --status Failed
+	python update_log.py -l ${LOG} -o ${OBSID} --stage g-level --status Failed
 	exit 1
 fi
+trap 'python ${SOFTWARE}/update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --status Failed' ERR
 module unload python/3.11.6
 
 cd ${DATA}
@@ -49,9 +50,10 @@ make OBSID=${OBSID} scripts_dir=${scripts_dir} DATA=${DATA} -f ${makefile_dir}/M
 echo "${OBSID} glevel"
 bash ${scripts_dir}/glevel_vot.sh ${OBSID} ${DATA}
 
-# create g-map
+## Nevermind, gmap can be made externally
+#echo "${OBSID} gmap"
 #singularity exec -B $PWD ${container} python ${scripts_dir}/make_gmap.py -o ${OBSID} -d ${DATA}
 
-#module load python 3.11.6
-#python update_log.py -l ${LOG} -o ${OBSID} --status Complete
-#echo "${OBSID} G-map created"
+module load python 3.11.6
+python ${SOFTWARE}/update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --status Complete
+echo "${OBSID} g-level calculated"
