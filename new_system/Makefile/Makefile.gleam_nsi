@@ -1,0 +1,14 @@
+FREQ=121-132
+PIPELINE=${scripts_dir}
+CAT_PATH=/software/projects/mwasci/awaszewski/catalogs/
+
+SUFFIX=gleam
+RA=RAJ2000
+DE=DEJ2000
+HDF5=$(OBSID).hdf5
+
+SH=/bin/bash
+PYTHON=python
+
+$(OBSID)_$(SUFFIX).vot : $(OBSID)_detections_$(SUFFIX).vot
+	$(PYTHON) $(PIPELINE)/add_nsi2.py $(OBSID)_detections_$(SUFFIX).vot $(OBSID)_$(SUFFIX).vot -o $(OBSID) --ra_col=$(RA) --dec_col=$(DE)

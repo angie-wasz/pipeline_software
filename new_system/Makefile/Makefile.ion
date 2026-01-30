@@ -25,6 +25,6 @@ $(OBSID)_$(FREQ)_$(CONTINUUM)_corr.vot : $(OBSID)_$(FREQ)_ion.vot $(OBSID)_$(FRE
 
 ### THIS DEFINITELY DOESNT WORK
 $(OBSID)_$(FREQ)_ion.vot : $(OBSID)_$(FREQ)_cal.vot
-	singularity exec -B $PWD /software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img $(PYTHON) $(PIPELINE)/RBF_generate.py $(OBSID)_$(FREQ)_cal.vot $(OBSID)_$(FREQ)-image.fits $(OBSID)_$(FREQ)_ion.vot
+	$(PYTHON) $(PIPELINE)/RBF_generate.py $(OBSID)_$(FREQ)_cal.vot $(OBSID)_$(FREQ)-image.fits $(OBSID)_$(FREQ)_ion.vot
 
 

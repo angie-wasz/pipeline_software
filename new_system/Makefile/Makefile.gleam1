@@ -1,0 +1,20 @@
+FREQ=121-132
+PIPELINE=${scripts_dir}
+CAT_PATH=/software/projects/mwasci/awaszewski/catalogs/
+GLEAM_CONTAINER=/software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img
+
+SUFFIX=gleam
+RA=RAJ2000
+DE=DEJ2000
+HDF5=$(OBSID).hdf5
+
+SH=/bin/bash
+PYTHON=python
+
+GLEAM_TARGET : $(OBSID)_detections_$(SUFFIX).vot
+
+$(OBSID)_detections_$(SUFFIX).vot : $(OBSID)_infield_$(SUFFIX).vot $(OBSID)_$(FREQ)_image_corr.vot $(OBSID)_$(FREQ)_image_moment2_corr.vot
+	$(SH) $(PIPELINE)/match_master.sh  $(OBSID)_infield_$(SUFFIX).vot $(OBSID)_$(FREQ)_image_corr.vot $(OBSID)_$(FREQ)_image_moment2_corr.vot $(OBSID)_detections_$(SUFFIX).vot $(RA) $(DE)
+
+$(OBSID)_infield_$(SUFFIX).vot : $(HDF5)
+	$(PYTHON) $(PIPELINE)/make_obs_cat.py $(HDF5) $(CAT_PATH)/ips_gleam_vlssr_dr2_230802.fits $(OBSID)_infield_$(SUFFIX).vot --ra_col=$(RA) --dec_col=$(DE)

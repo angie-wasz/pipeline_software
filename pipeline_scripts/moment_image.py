@@ -190,11 +190,11 @@ if rank == 0:
             hdu.header[k] = v.decode('ascii') if isinstance(v, bytes) else v
         if not opts.pol:
             hdu.data = out_data[:, :, i].reshape((1, 1, data_y, data_x))
-            hdu.writeto(FITS_OUT % (basename, opts.freq+'_' if opts.freq is not None else "", opts.suffix, i+1))
+            hdu.writeto(FITS_OUT % (basename, opts.freq+'_' if opts.freq is not None else "", opts.suffix, i+1), overwrite=True)
         else:
             for p, pol in enumerate(POLS):
                 hdu.data = out_data[:, :, i, p].reshape((1, 1, data_y, data_x))
-                hdu.writeto(POL_FITS_OUT % (basename, opts.freq if opts.freq is not None else "", opts.suffix, i+1, pol))
+                hdu.writeto(POL_FITS_OUT % (basename, opts.freq if opts.freq is not None else "", opts.suffix, i+1, pol), overwrite=True)
     print("Master done")
 else:
     indexes = range(rank-1, total_chunks, size-1)
