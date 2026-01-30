@@ -1,5 +1,4 @@
 import os, argparse
-import json, requests
 import numpy as np
 
 import astropy.units as u
