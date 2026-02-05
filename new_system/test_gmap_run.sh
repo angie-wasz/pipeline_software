@@ -1,4 +1,4 @@
-OBSID=1446272184
+OBSID=1446433560
 DATA=/scratch/mwasci/awaszewski/pipeline/${OBSID}/
 SOFTWARE=/software/projects/mwasci/awaszewski/new_system/
 LOG=new_system_test.sqlite
