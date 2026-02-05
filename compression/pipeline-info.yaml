@@ -1,0 +1,115 @@
+# Pipeline configuration
+software: /software/projects/mwasci/awaszewski/
+pipeline: /scratch/mwasci/awaszewski/pipeline/
+container: /software/projects/mwasci/awaszewski/ips_post.img
+gleam_container: /software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img
+skymodel: /software/projects/mwasci/awaszewski/catalogs/GGSM.txt
+
+# Observation parameters
+sources: 250
+uvwmin: 130m
+uvwmax: 1300m
+freq: 129-130
+pols:
+  - XX
+  - YY
+
+# Solar Imaging parameters
+n_cpu: 32
+mem: 50
+niter: 100000
+minuv_l: 0
+taper_inner_tukey: 50
+size: 1024
+scale: 0.1amin
+taper: 2amin
+nmiter: 0
+mgain: 0.8
+automask: 3
+autothresh: 2
+interval_start: 4
+interval_stop: 588
+
+# Core Imaging parameters
+scale_core: 6amin
+
+# Calibrator Imaging parameters
+scale_cal: 1.0amin
+
+# Sun position
+sun_coords:
+  '1062301216':
+    ra: 10h52m03.8s
+    dec: +07d13m01s
+    cal_obs: 1062280936
+
+channels:
+  '1061230112':
+    start: 640
+    stop: 704
+  '1061479000':
+    start: 640
+    stop: 704
+  '1061486800':
+    start: 640
+    stop: 704
+  '1061588824':
+    start: 640
+    stop: 704
+  '1061673608':
+    start: 640
+    stop: 704
+  '1061761152':
+    start: 640
+    stop: 704
+  '1061847312':
+    start: 640
+    stop: 704
+  '1061933480':
+    start: 640
+    stop: 704
+  '1062016184':
+    start: 640
+    stop: 704
+  '1062272032':
+    start: 640
+    stop: 704
+  '1062280936':
+    start: 640
+    stop: 704
+  '1062426184':
+    start: 640
+    stop: 704
+  '1062443144':
+    start: 640
+    stop: 704
+  '1062857008':
+    start: 640
+    stop: 704
+  '1062879904':
+    start: 640
+    stop: 704
+  '1063029336':
+    start: 640
+    stop: 704
+  '1063053608':
+    start: 640
+    stop: 704
+  '1063298760':
+    start: 640
+    stop: 704
+  '1063380656':
+    start: 640
+    stop: 704
+  '1063483048':
+    start: 640
+    stop: 704
+  '1063570592':
+    start: 640
+    stop: 704
+  '1063718648':
+    start: 640
+    stop: 704
+  '1063742920':
+    start: 640
+    stop: 704
