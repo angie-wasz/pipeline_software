@@ -5,7 +5,7 @@
 #SBATCH --output={{data}}/{{obsid}}-postimage.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
-#SBATCH --time=00:20:00
+#SBATCH --time=01:00:00
 #SBATCH --export=NONE
 
 set -exE

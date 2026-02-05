@@ -13,7 +13,7 @@ python update_log.py -l ${LOG} -o ${OBSID} --stage ASVO --status Processing
 
 # Submit job on ASVO
 if giant-squid submit-conv ${OBSID} -w -d scratch \
-    -p avg_time_res=0.5,avg_freq_res=160,flag_edge_width=160,output=ms; then
+    -p avg_time_res=0.5,avg_freq_res=40,flag_edge_width=40,output=ms; then
 
 	giant-squid list ${OBSID} > asvo_${OBSID}
 	ASVOID=$(grep "Conversion" asvo_${OBSID} | awk '{print $2}')

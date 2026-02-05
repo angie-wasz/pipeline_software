@@ -101,23 +101,24 @@ else
 			echo "${OBSID} measurement set does not exist. Proceeding with ASVO download"
 		fi
 	fi
+		
+	cal_sols=${DATA}/${OBSID}_160.bin
+	if [ -f ${cal_sols} ]; then
+		echo "${OBSID} calibration solutions are available. Skipping calibration"
+		CAL_SKIP=TRUE
+	else
+		echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
+	fi
 
-	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Image") ]]; then
-		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
+	#	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Image") ]]; then
+	#		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
 		#cal_sols=${DATA}/${OBSID}_sols.fits
 		#if [ -f ${cal_sols} ]; then
 		#	echo "${OBSID} calibration solutions are available. Skipping calibration"
 		#	CAL_SKIP=TRUE
 		#else
-		cal_sols=${DATA}/${OBSID}_160.bin
-		if [ -f ${cal_sols} ]; then
-			echo "${OBSID} calibration solutions are available. Skipping calibration"
-			CAL_SKIP=TRUE
-		else
-			echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
-		fi
 		#fi
-	fi
+	#	fi
 fi
 
 # ASVO staging
@@ -165,10 +166,6 @@ elif [ "$POSTIMAGE" == "TRUE" ]; then
 		echo "${OBSID} Images exist, proceeding with post-imaging"
 		STAGE="post"
 		## Would check if post-image has already been run, but hdf5 wouldn't work because of 121-132 column existing
-		#postimage_file=${DATA}/${OBSID}_121-132-image_comp.vot
-		#if [ -f ${postimage_file} ]; then
-		#	echo "${OBSID} Post-image has run before, overwriting files"
-		#	rm ${DATA}/*.vot
 	else
 		echo "${OBSID} Images do not exist, first running imaging"
 		STAGE="full"
@@ -178,16 +175,26 @@ else
 	STAGE="full"
 fi
 
+# Post Imaging
+# Check if post-image has been attempted before (assuming re-run on fail)
+postimage_file=${DATA}/${OBSID}_121-132-image_comp.vot
+if [ -f ${postimage_file} ]; then
+	echo "${OBSID} Post-image has been attempted before, overwriting files"
+	echo "WARNING: If post-image has completed in the past, post-image will fail due to hdf5 overwrite"
+	rm ${DATA}/*.vot
+fi
+
 bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}
 # Imaging/Post-imaging is checked if successful when it's run
 
 # creation of g-map, then save it
-# bash ./gmap.sh ${OBSID} 
+# add this in once I fix the failing november observations
+#bash ./gmap.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG}
 
 # Acacia storage
-if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
-	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
-fi
+#if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
+#	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
+#fi
 
 # Do we want to check when acacia transfer is done? 
 # Yes but I don't know how
