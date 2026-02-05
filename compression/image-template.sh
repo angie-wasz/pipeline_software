@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_cpu}}
 #SBATCH --mem={{mem}}G
-#SBATCH --time=05:00:00
+#SBATCH --time=12:00:00
 #SBATCH --export=NONE
 
 set -euxEo pipefail
@@ -31,7 +31,14 @@ if [ ! -s {{obsid}}.metafits ]; then
 	exit 1 
 fi
 
-cal_sol=/scratch/mwasci/awaszewski/pipeline/{{sun_coords[obsid]['cal_obs']}}/{{sun_coords[obsid]['cal_obs']}}_ch129-130_sols.fits
+cal_obs={{sun_coords[obsid]['cal_obs']}}
+
+if cal_obs > 0; then
+	cal_sol='/scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_obs}_ch{{freq}}_sols.fits'
+else
+	echo "No calibrator observation exists"
+	exit 1
+fi
 
 echo "DATE"
 date -Iseconds
