@@ -32,6 +32,7 @@ parser.add_option("--pol", dest="pol", default="I", help="primary beam polarisat
 parser.add_option("-m", "--moment2", dest="moment2", action="store_true", help="Calculate variability image parameters (dS etc)")
 parser.add_option("-c", "--cutoff", dest="cutoff", default=5, help="remove sources with lower S/N")
 parser.add_option("-v", "--verbose", action="count", dest="verbose", default=0, help="-l info, -ll debug")
+parser.add_option("-f", "--freq", dest="freq", default='121-132', help="frequency")
 
 opts, args = parser.parse_args()
 #FIXME add options for 
@@ -58,7 +59,7 @@ else:
 if os.path.exists(args[2]):
     os.remove(args[2])
 
-imstack = ImageStack(args[0], freq='121-132', image_type=None)
+imstack = ImageStack(args[0], freq=opts.freq, image_type=None)
 dim_x, dim_y = imstack.group['beam'].shape[1:3]
 
 t = Table.read(args[1])
