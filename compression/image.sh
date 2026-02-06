@@ -1,5 +1,6 @@
 OBSID=$1
 DATA=/scratch/mwasci/awaszewski/pipeline/${OBSID}/
+LOG=/software/projects/mwasci/awaszewski/compression/compression_log.sqlite
 
 module load python/3.11.6
 module load singularity/4.1.0-slurm
@@ -18,4 +19,4 @@ singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yam
 	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} \
 	--strict -o ${DATA}/${OBSID}-image.sh
 
-sbatch ${DATA}/${OBSID}-image.sh
+#sbatch ${DATA}/${OBSID}-image.sh

@@ -32,13 +32,13 @@ if [ ! -s {{obsid}}.metafits ]; then
 fi
 
 cal_obs={{sun_coords[obsid]['cal_obs']}}
-
-if cal_obs > 0; then
-	cal_sol='/scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_obs}_ch{{freq}}_sols.fits'
-else
-	echo "No calibrator observation exists"
+if [ ${cal_obs} -eq 0 ]; then
+	echo "No calibrator observation exisits"
 	exit 1
 fi
+
+cp /scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_obs}_ch{{freq}}_sols.fits ./
+cal_sol=${cal_obs}_ch{{freq}}_sols.fits 
 
 echo "DATE"
 date -Iseconds
