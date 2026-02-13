@@ -165,7 +165,6 @@ elif [ "$POSTIMAGE" == "TRUE" ]; then
 	if [ -f ${image_file} ]; then
 		echo "${OBSID} Images exist, proceeding with post-imaging"
 		STAGE="post"
-		## Would check if post-image has already been run, but hdf5 wouldn't work because of 121-132 column existing
 	else
 		echo "${OBSID} Images do not exist, first running imaging"
 		STAGE="full"
@@ -179,9 +178,9 @@ fi
 # Check if post-image has been attempted before (assuming re-run on fail)
 postimage_file=${DATA}/${OBSID}_121-132-image_comp.vot
 if [ -f ${postimage_file} ]; then
-	echo "${OBSID} Post-image has been attempted before, overwriting files"
+	echo "${OBSID} Post-image has been attempted before"
 	echo "WARNING: If post-image has completed in the past, post-image will fail due to hdf5 overwrite"
-	rm ${DATA}/*.vot
+	#rm ${DATA}/*.vot
 fi
 
 bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}

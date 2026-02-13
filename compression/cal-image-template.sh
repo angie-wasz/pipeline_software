@@ -40,10 +40,10 @@ date -Iseconds
 singularity exec -B $PWD {{gleam_container}} applysolutions ${ms} ${cal_sol}
 
 # Standard image
-singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem}} -name {{obsid}}_{{freq}} --pol xx,yy -size {{size}} {{size}} -join-polarizations -niter {{niter}} -minuv-l {{minuv_l}} -nmiter {{nmiter}} -auto-threshold {{autothresh}} -auto-mask {{automask}} -taper-inner-tukey {{taper_inner_tukey}} -taper-gaussian {{taper}} -scale {{scale_cal}} -channel-range {{channels[obsid]['start']}} {{channels[obsid]['stop']}} -log-time ${ms}
+singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem}} -name {{obsid}}_{{freq}} --pol xx,yy -size {{size}} {{size}} -join-polarizations -niter {{niter}} -minuv-l {{minuv_l}} -nmiter {{nmiter}} -auto-threshold {{autothresh}} -auto-mask {{automask}} -taper-inner-tukey {{taper_inner_tukey}} -taper-gaussian {{taper}} -scale {{scale_cal}} -channel-range {{channels[obsid]['start']}} {{channels[obsid]['stop']}} -reorder -log-time ${ms}
 
 # Flag non-core tiles
 singularity exec -B $PWD {{gleam_container}} flagantennae ${ms} 11 18 21 22 23 28 31 32 46 48 51 52 53 54 55 56 57 58 61 71 72 73 74 75 76 77 78 81 82 87 88 91 92 93 96 97 98 101 102 103 104 105 106 107 108 111 112 113 114 115 116 117 118 121 122 123 124 125 126 127 128 131 132 133 134 135 136 137 138 141 142 143 144 145 146 147 148 151 152 153 154 155 156 157 158 161 162 163 164 165 166 167 168
 
 # Standard image - core
-singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem}} -name {{obsid}}_{{freq}}_core --pol xx,yy -size {{size}} {{size}} -join-polarizations -niter {{niter}} -nmiter {{nmiter}} -auto-threshold {{autothresh}} -auto-mask {{automask}} -scale {{scale_core}} -channel-range {{channels[obsid]['start']}} {{channels[obsid]['stop']}} -log-time ${ms}
+singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem}} -name {{obsid}}_{{freq}}_core --pol xx,yy -size {{size}} {{size}} -join-polarizations -niter {{niter}} -nmiter {{nmiter}} -auto-threshold {{autothresh}} -auto-mask {{automask}} -scale {{scale_core}} -channel-range {{channels[obsid]['start']}} {{channels[obsid]['stop']}} -reorder -log-time ${ms}

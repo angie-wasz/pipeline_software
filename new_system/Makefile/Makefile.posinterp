@@ -12,10 +12,10 @@ all: $(OBSID)_$(FREQ)_$(CONTINUUM).vot $(OBSID)_$(FREQ)_$(VARIABILITY).vot
 # Tidy up catalogs 
 ################################
 $(OBSID)_$(FREQ)_$(VARIABILITY).vot : $(HDF5) $(OBSID)_$(FREQ)_$(VARIABILITY)_pos.vot
-	$(PYTHON) $(PIPELINE)/make_cat_tidy.py -m $(HDF5) $(OBSID)_$(FREQ)_$(VARIABILITY)_pos.vot $(OBSID)_$(FREQ)_$(VARIABILITY).vot -o $(OBSID)
+	$(PYTHON) $(PIPELINE)/make_cat_tidy.py -m $(HDF5) $(OBSID)_$(FREQ)_$(VARIABILITY)_pos.vot $(OBSID)_$(FREQ)_$(VARIABILITY).vot -o $(OBSID) -f $(FREQ)
 
 $(OBSID)_$(FREQ)_$(CONTINUUM).vot : $(HDF5) $(OBSID)_$(FREQ)-$(CONTINUUM)_mom2interp.vot
-	$(PYTHON) $(PIPELINE)/make_cat_tidy.py -i $(HDF5) $(OBSID)_$(FREQ)-$(CONTINUUM)_mom2interp.vot $(OBSID)_$(FREQ)_$(CONTINUUM).vot -o $(OBSID)
+	$(PYTHON) $(PIPELINE)/make_cat_tidy.py -i $(HDF5) $(OBSID)_$(FREQ)-$(CONTINUUM)_mom2interp.vot $(OBSID)_$(FREQ)_$(CONTINUUM).vot -o $(OBSID) -f $(FREQ)
 
 ################################
 # Interp moment2

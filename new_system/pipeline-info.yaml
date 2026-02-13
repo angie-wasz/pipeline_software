@@ -28,4 +28,4 @@ mgain: 0.8
 automask: 3
 autothresh: 2
 interval_start: 0
-interval_stop: 1200
+interval_stop: 400

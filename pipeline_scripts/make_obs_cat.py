@@ -23,6 +23,7 @@ parser.add_option("-p", "--pb_threshold", dest="pb", default=0.25, help="only ke
 parser.add_option("--ra_col", dest="ra_col", default='ra', help="ra column in input")
 parser.add_option("--dec_col", dest="dec_col", default='dec', help="dec column in input")
 parser.add_option("-v", "--verbose", action="count", dest="verbose", default=0, help="-v info, -vv debug")
+parser.add_option("-f", dest="freq", default='121-132', help="frequency")
 
 opts, args = parser.parse_args()
 if not len(args) == 3:
@@ -38,7 +39,7 @@ else:
 if os.path.exists(args[2]):
     os.remove(args[2])
 
-imstack = ImageStack(args[0], freq='121-132', image_type=None)
+imstack = ImageStack(args[0], freq=opts.freq, image_type=None)
 dim_x, dim_y = imstack.group['beam'].shape[1:3]
 
 t = Table.read(args[1])
