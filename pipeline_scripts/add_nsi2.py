@@ -4,15 +4,17 @@ import logging
 import numpy as np
 from astropy.table import Table
 from astropy.time import Time
+from astropy import units as u
 from astropy.units import deg
 from astropy.coordinates import SkyCoord, get_sun
+from scipy import contants
 from scint_parameters import get_solar_params
 from imstack import ImageStack
 
 from optparse import OptionParser, OptionValueError
 
 POL_OPTIONS=("XX", "YY", "I")
-WAVELENGTH=1.862
+#WAVELENGTH=1.862
 RA_COL='ra'
 DEC_COL='dec'
 
@@ -45,6 +47,7 @@ parser.add_option("-o", "--obsid", dest="obsid", default=None, help="time in gps
 parser.add_option("--ra_col", dest="ra_col", default=RA_COL, help="RA column")
 parser.add_option("--dec_col", dest="dec_col", default=DEC_COL, help="Decl. column")
 parser.add_option("-v", "--verbose", action="count", dest="verbose", default=0, help="-v info, -vv debug")
+parser.add_option("--freq", dest="freq", default=162, help="Frequency of the observation")
 
 opts, args = parser.parse_args()
 #FIXME add options for 
@@ -79,6 +82,8 @@ radec = SkyCoord(t[opts.ra_col], t[opts.dec_col], unit = "deg")
 #t['elongation'] = sun.separation(radec)
 #t['snr'] = t['peak_flux'] / t['local_rms']
 
+wavelength=(constants.c/(opts.freq*u.MHz))/u.m
+
 sun_xyz = time_to_sun_cartesian(time)
 elongation, p, limb, sun_lat = get_solar_params(np.array(sun_xyz).reshape(3, 1), np.array(radec.cartesian.xyz))
 logging.debug("elongations: %s", elongation)
@@ -87,8 +92,8 @@ t['elongation2'] = np.degrees(elongation)
 #t['p'] = p
 t['limb'] = limb
 t['sun_lat'] = np.degrees(sun_lat)
-m1 = get_scint_index2(p, np.radians(t['sun_lat']), WAVELENGTH, cutoff1=1.0, cutoff2=1.0, rho=1.0, b=1.6)
-m2 = get_scint_index2(p, np.radians(t['sun_lat']), WAVELENGTH, cutoff1=1.0, cutoff2=1.0, rho=1.5, b=1.6)
+m1 = get_scint_index2(p, np.radians(t['sun_lat']), wavelength, cutoff1=1.0, cutoff2=1.0, rho=1.0, b=1.6)
+m2 = get_scint_index2(p, np.radians(t['sun_lat']), wavelength, cutoff1=1.0, cutoff2=1.0, rho=1.5, b=1.6)
 t['mpt1'] = m1
 t['mpt2'] = m2
 #t['nsi1'] = t['scint_index']/m1

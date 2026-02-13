@@ -56,6 +56,8 @@ def main():
     obs = args.obsid
     dir = args.dir
 
+    print(f"Generating g-map for {obs}")
+
     obstime = Time(obs, format='gps')
 
     # create the gmap
@@ -79,7 +81,7 @@ def main():
     ax.set_xlim([min(tx)-10, max(tx)+10])
     ax.set_ylim([min(ty)-10, max(ty)+10])
 
-    print(len(tx), len(ty), len(g))
+    print(f"Number of sources with g-level: {len(g)}")
     
     ax.scatter(0,0, marker='*', c='tab:orange', s=100)
     field = ax.scatter(tx, ty, c=g, marker='o',
@@ -89,10 +91,12 @@ def main():
                         edgecolors='dimgrey',
                         linewidths=0.2)
     
-    bar = plt.colorbar(field, ax=ax, pad=0.01, label='$\it{g}$-level')
+    bar = plt.colorbar(field, ax=ax, pad=0.01, label='g-level')
     bar.minorticks_off()
     bar.set_ticks([vmin, median, vmax])
     bar.set_ticklabels(["{:.1f}".format(vmin), "{:.1f}".format(median), "{:.1f}".format(vmax)])
+
+    print("Done, saving as .png")
 
     fig.tight_layout()
     fig.savefig(f'{dir}/{obs}_gmap.png', bbox_inches='tight')
