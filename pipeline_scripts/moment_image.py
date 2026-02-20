@@ -91,9 +91,9 @@ def index_to_chunk(index, chunk_x, data_x, trim_x, chunk_y, data_y, trim_y, inda
         return slice((index_x+trim_x)*chunk_x, (index_x+trim_x+1)*chunk_x), slice((index_y+trim_y)*chunk_y, (index_y+trim_y+1)*chunk_y)
 
 imstack = ImageStack(hdf5_in, freq=opts.freq, steps=steps, image_type=opts.suffix)
-if os.path.exists(HDF5_OUT % (basename, opts.suffix)):
-    with h5py.File(HDF5_OUT % (basename, opts.suffix), 'r') as df:
-        assert not group in df.keys(), "output hdf5 file already contains this %s" % opts.freq
+#if os.path.exists(HDF5_OUT % (basename, opts.suffix)):
+    #with h5py.File(HDF5_OUT % (basename, opts.suffix), 'r') as df:
+        #assert not group in df.keys(), "output hdf5 file already contains this %s" % opts.freq
     
 for i in range(opts.n_moments):
     if not opts.pol:
