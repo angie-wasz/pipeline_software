@@ -77,7 +77,7 @@ def main():
 
     ra, dec, g = df.RAJ2000_1.to_numpy(), df.DEJ2000_1.to_numpy(), df.g.to_numpy()
     tx, ty = convert_to_solar(ra, dec, obstime)
-    
+
     ax.set_xlim([min(tx)-10, max(tx)+10])
     ax.set_ylim([min(ty)-10, max(ty)+10])
 
