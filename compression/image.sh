@@ -15,8 +15,13 @@ ASVOID=$(python /software/projects/mwasci/awaszewski/new_system/read_log.py -l $
 
 echo "${OBSID} Imaging"
 
+# WILL HAVE TO MANUALLY CHANGE THESE PARAMETERS FOR THE DIFFERENT GLEAM BANDS 
+cal_obs=1061486560
+cal_freq_ch='62-63'
+cal_sol="/scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_obs}_ch${cal_freq_ch}.bin"
+
 singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
-	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} \
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} -D cal_sol=${cal_sol}\
 	--strict -o ${DATA}/${OBSID}-image.sh
 
-#sbatch ${DATA}/${OBSID}-image.sh
+sbatch ${DATA}/${OBSID}-image.sh

@@ -52,12 +52,11 @@ hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
 
 hyperdrive plot-solutions {{obsid}}_sols.fits
 
-hyperdrive solutions-convert {{obsid}}_sols.fits {{obsid}}.bin
+#hyperdrive solutions-convert {{obsid}}_sols.fits {{obsid}}.bin
 
 # Transfer data back to scratch
 rsync -av {{obsid}}_sols.fits \
 	{{obsid}}*.png \
-	{{obsid}}.bin \
 	{{obsid}}.metafits \
 	{{pipeline}}/{{obsid}}/
 

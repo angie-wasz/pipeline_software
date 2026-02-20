@@ -18,7 +18,7 @@ python ../new_system/update_log.py -l ${LOG} -o ${OBSID} --stage ASVO --status P
 
 # Submit job on ASVO
 if giant-squid submit-conv ${OBSID} -w -d scratch \
-    -p avg_time_res=0.5,avg_freq_res=40,flag_edge_width=40,output=ms; then
+    -p avg_time_res=4,avg_freq_res=40,flag_edge_width=40,output=ms; then
 	
 	#-p avg_time_res=4,avg_freq_res=40,flag_edge_width=40,output=ms; then
 	# for calibrator imaging ^
