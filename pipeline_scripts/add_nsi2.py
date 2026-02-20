@@ -7,7 +7,7 @@ from astropy.time import Time
 from astropy import units as u
 from astropy.units import deg
 from astropy.coordinates import SkyCoord, get_sun
-from scipy import contants
+from scipy import constants
 from scint_parameters import get_solar_params
 from imstack import ImageStack
 
@@ -47,7 +47,7 @@ parser.add_option("-o", "--obsid", dest="obsid", default=None, help="time in gps
 parser.add_option("--ra_col", dest="ra_col", default=RA_COL, help="RA column")
 parser.add_option("--dec_col", dest="dec_col", default=DEC_COL, help="Decl. column")
 parser.add_option("-v", "--verbose", action="count", dest="verbose", default=0, help="-v info, -vv debug")
-parser.add_option("--freq", dest="freq", default=162, help="Frequency of the observation")
+parser.add_option("--freq", dest="freq", default=162, type=int, help="Frequency of the observation")
 
 opts, args = parser.parse_args()
 #FIXME add options for 
@@ -82,7 +82,7 @@ radec = SkyCoord(t[opts.ra_col], t[opts.dec_col], unit = "deg")
 #t['elongation'] = sun.separation(radec)
 #t['snr'] = t['peak_flux'] / t['local_rms']
 
-wavelength=(constants.c/(opts.freq*u.MHz))/u.m
+wavelength=(constants.c/opts.freq)/1000000
 
 sun_xyz = time_to_sun_cartesian(time)
 elongation, p, limb, sun_lat = get_solar_params(np.array(sun_xyz).reshape(3, 1), np.array(radec.cartesian.xyz))
