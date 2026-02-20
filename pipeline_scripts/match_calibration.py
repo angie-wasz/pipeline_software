@@ -29,4 +29,4 @@ outcat = t1[d2d<2*u.arcmin] # t1 matches
 outref = t2[idx[d2d<2*u.arcmin]] # t2 matches
 outcat['Fp162'] = outref['Fp162']
 
-outcat.write(args[2], format='votable')
+outcat.write(args[2], format='votable', overwrite=True)
