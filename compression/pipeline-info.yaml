@@ -21,7 +21,7 @@ niter: 100000
 minuv_l: 0
 taper_inner_tukey: 50
 size: 1024
-scale: 0.1amin
+scale: 0.2amin
 taper: 2amin
 nmiter: 0
 mgain: 0.8
@@ -31,7 +31,10 @@ interval_start: 4
 interval_stop: 588
 
 # Core Imaging parameters
+niter_core: 0
 scale_core: 6amin
+minuv_l_core: 10
+maxuv_l_core: 50
 
 # Calibrator Imaging parameters
 scale_cal: 1.0amin
