@@ -9,7 +9,7 @@ skymodel: /software/projects/mwasci/awaszewski/catalogs/GGSM.txt
 sources: 250
 uvwmin: 130m
 uvwmax: 1300m
-freq: 129-130
+#freq: 129-130
 pols:
   - XX
   - YY

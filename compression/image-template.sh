@@ -1,8 +1,8 @@
 #!/bin/bash -l
 #SBATCH --account=mwasci
 #SBATCH --partition=mwa
-#SBATCH --job-name={{obsid}}_image
-#SBATCH --output={{data}}/{{obsid}}-image.out
+#SBATCH --job-name={{obsid}}_{{freq}}_image
+#SBATCH --output={{data}}/{{obsid}}_ch{{freq}}-image.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_cpu}}
 #SBATCH --mem={{mem}}G

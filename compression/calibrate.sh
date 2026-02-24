@@ -7,20 +7,20 @@ module load python/3.11.6
 module load singularity/4.1.0-slurm
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 
-sleep $(echo "scale=3; $RANDOM/32768*10" | bc)
+#sleep $(echo "scale=3; $RANDOM/32768*10" | bc)
 
 if [ ! -d ${DATA} ]; then
     echo "${OBSID} creating data directory"
     mkdir ${DATA}
 fi
 
-#ASVOID=$(python /software/projects/mwasci/awaszewski/new_system/read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
+ASVOID=$(python /software/projects/mwasci/awaszewski/new_system/read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
 
 echo "${OBSID} Calibration"
 
-#singularity exec -B $PWD ${container} jinja2 calibrate-template.sh pipeline-info.yaml --format=yaml \
-#	-D obsid=${OBSID} -D asvo=${ASVOID} -D output=${DATA}/${OBSID}-calibrate.out \
-#	--strict -o ${DATA}/${OBSID}-calibrate.sh
+singularity exec -B $PWD ${container} jinja2 calibrate-template.sh pipeline-info.yaml --format=yaml \
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D output=${DATA}/${OBSID}-calibrate.out \
+	--strict -o ${DATA}/${OBSID}-calibrate.sh
 
 sbatch ${DATA}/${OBSID}-calibrate.sh
 
