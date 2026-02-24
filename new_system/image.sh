@@ -13,7 +13,6 @@ container="/software/projects/mwasci/awaszewski/ips_post.img"
 echo "${OBSID} Imaging and Post-imaging"
 
 
-
 if [[ ("${STAGE}" == "full") || ("${STAGE}" == "image") ]]; then
 	singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
 		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D calsol=${CAL_SOLS} -D data=${DATA} \

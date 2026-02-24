@@ -10,4 +10,4 @@ while read -r OBSID; do
 	
 	singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
 
-done < obsids_2025a_nov.txt
+done < already_on_asvo.txt

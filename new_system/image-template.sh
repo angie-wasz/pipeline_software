@@ -41,6 +41,12 @@ if [ ! -s {{obsid}}.metafits ]; then
 	exit 1 
 fi
 
+new_ms={{obsid}}{{freq}}_avg.ms
+# average up in frequency to reduce image time
+hyperdrive vis-convert --freq-average 4 -o ${new_ms} -d ${ms}
+rm -r ${ms}
+ms=${new_ms}
+
 cal_sol={{calsol}}
 
 echo "DATE"
@@ -87,7 +93,7 @@ singularity exec -B $PWD {{container}} python ${imstack}/add_continuum.py --over
 echo "DATE"
 date -Iseconds
 
-rm *-t0*
+rm *-t*
 rm -r {{obsid}}{{freq}}.ms
 #rm -r {{obsid}}.ms
 

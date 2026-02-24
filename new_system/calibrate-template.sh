@@ -4,14 +4,15 @@
 #SBATCH --job-name={{obsid}}_ips_cal
 #SBATCH --output={{output}}
 #SBATCH --nodes=1
-#SBATCH --time=00:10:00
-#SBATCH --gres=gpu:1
+#SBATCH --time=00:30:00
+#SBATCH --gres=gpu:4
 #SBATCH --export=NONE
 
 set -euxEo pipefail
 
 # Load relevant modules
 module load python/3.11.6
+module load singularity/4.1.0-slurm
 module load hyperdrive/0.6.1
 hyperdrive -V
 
@@ -57,14 +58,16 @@ hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
 	--num-sources {{sources}} \
 	--uvw-min {{uvwmin}} \
 	--uvw-max {{uvwmax}} \
-	-o {{obsid}}_sols.fits
+	-o {{obsid}}_sols_162MHz.fits
 
 rm -r {{obsid}}.ms
 
+hyperdrive plot-solutions {{obsid}}_sols_162MHz.fits
 
-hyperdrive plot-solutions {{obsid}}_sols.fits
+hyperdrive solutions-convert {{obsid}}_sols_162MHz.fits {{obsid}}_sols_162MHz.bin
 
-hyperdrive solutions-convert {{obsid}}_sols.fits {{obsid}}_160.bin
+singularity exec -B $PWD {{container}} python3 {{software}}/pipeline_scripts/aocal_interp.py -a 4 {{obsid}}_sols_162MHz.bin {{obsid}}_sols_162MHz_160.bin
+
 
 echo "DATE"
 date -Iseconds
@@ -78,21 +81,20 @@ hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
 	--num-sources {{sources}} \
 	--uvw-min {{uvwmin}} \
 	--uvw-max {{uvwmax}} \
-	-o {{obsid}}_57-68_sols.fits
+	-o {{obsid}}_sols_80MHz.fits
 
-hyperdrive plot-solutions {{obsid}}_57-68_sols.fits
+hyperdrive plot-solutions {{obsid}}_sols_80MHz.fits
 
-hyperdrive solutions-convert {{obsid}}_57-68_sols.fits {{obsid}}_57-68_160.bin
+hyperdrive solutions-convert {{obsid}}_sols_80MHz.fits {{obsid}}_sols_80MHz.bin
 
+singularity exec -B $PWD {{container}} python3 {{software}}/pipeline_scripts/aocal_interp.py -a 4 {{obsid}}_sols_80MHz.bin {{obsid}}_sols_80MHz_160.bin
 
 # Clean up
 
 # Transfer data back to scratch
-rsync -av {{obsid}}_sols.fits \
-	{{obsid}}_57-68_sols.fits \
+rsync -av {{obsid}}_sols*.fits \
 	{{obsid}}*.png \
-	{{obsid}}_160.bin \
-	{{obsid}}_57-68_160.bin \
+	{{obsid}}_sols*.bin \
 	{{obsid}}.metafits \
 	{{pipeline}}/{{obsid}}/
 

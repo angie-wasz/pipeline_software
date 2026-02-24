@@ -18,7 +18,7 @@ module load singularity/4.1.0-slurm
 module load python/3.11.6
 comp_file=${DATA}/${OBSID}_121-132-image_comp.vot
 if [ -f ${comp_file} ]; then
-	echo "${OBSID} Required files exist, continuing with creation of g-map"
+	echo "${OBSID} Required files exist, continuing with calculation of g-levels"
 	python update_log.py -l ${LOG} -o ${OBSID} --stage g-level --status Running	
 else
 	echo "${OBSID} Required files for g-map creation do not exist, exitting workflow"

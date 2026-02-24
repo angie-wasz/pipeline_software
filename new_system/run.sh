@@ -102,7 +102,7 @@ else
 		fi
 	fi
 		
-	cal_sols=${DATA}/${OBSID}_160.bin
+	cal_sols=${DATA}/${OBSID}_sols_162MHz_160.bin
 	if [ -f ${cal_sols} ]; then
 		echo "${OBSID} calibration solutions are available. Skipping calibration"
 		CAL_SKIP=TRUE
@@ -110,15 +110,6 @@ else
 		echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
 	fi
 
-	#	if [[ ("$stage" == "Calibration" && "$status" == "Complete") || ("$stage" == "Imaging" || "$stage" == "Post-Image") ]]; then
-	#		echo "${OBSID} has already been through calibration. Checking if calibration solutions are available."
-		#cal_sols=${DATA}/${OBSID}_sols.fits
-		#if [ -f ${cal_sols} ]; then
-		#	echo "${OBSID} calibration solutions are available. Skipping calibration"
-		#	CAL_SKIP=TRUE
-		#else
-		#fi
-	#	fi
 fi
 
 # ASVO staging
@@ -155,7 +146,7 @@ if [ "$CALIBRATE" == "TRUE" ]; then
 	exit
 fi
 
-# Imaging
+# Imaging and Post-imaging
 if [ "$IMAGE" == "TRUE" ]; then
 	echo "${OBSID} Only proceeding with imaging (no post image)"
 	STAGE="image"
@@ -174,29 +165,14 @@ else
 	STAGE="full"
 fi
 
-# Post Imaging
-# Check if post-image has been attempted before (assuming re-run on fail)
-postimage_file=${DATA}/${OBSID}_121-132-image_comp.vot
-if [ -f ${postimage_file} ]; then
-	echo "${OBSID} Post-image has been attempted before"
-	echo "WARNING: If post-image has completed in the past, post-image will fail due to hdf5 overwrite"
-	#rm ${DATA}/*.vot
-fi
-
 bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}
-# Imaging/Post-imaging is checked if successful when it's run
 
-# creation of g-map, then save it
-# add this in once I fix the failing november observations
-#bash ./gmap.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG}
+# g-level
+bash ./glevel.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG}
 
 # Acacia storage
-#if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
-#	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
-#fi
-
-# Do we want to check when acacia transfer is done? 
-# Yes but I don't know how
-# For now it just spits out the job id for both transfers and hope for the best I guess
+if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
+	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
+fi
 
 echo "${OBSID} done"
