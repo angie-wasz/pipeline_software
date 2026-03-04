@@ -15,7 +15,7 @@ module load python/3.11.6
 
 trap 'module load python/3.11.6; python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
 
-python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Running
+python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Running --stage Post-Image
 
 scripts_dir={{software}}/pipeline_scripts/
 
@@ -53,7 +53,7 @@ module unload py-scipy/1.14.1 py-astropy/5.1 py-mpi4py/4.0.1-py3.11.6
 singularity exec -B $PWD {{container}} python ${scripts_dir}/measure_noise.py {{obsid}}
 
 # Get final files
-singularity exec -B $PWD {{container}} python ${scripts_dir}/get_continuum.py --sigma {{obsid}}.hdf5 {{freq}} {{obsid}}_{{freq}}-image.fits
+singularity exec -B $PWD {{container}} python ${scripts_dir}/get_continuum.py --sigma {{obsid}}.hdf5 {{freq}} {{obsid}}_{{freq}}-image.fits --overwrite
 singularity exec -B $PWD {{gleam_container}} BANE --cores=1 --compress {{obsid}}_{{freq}}-image.fits
 singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}-image.vot {{obsid}}_{{freq}}-image.fits
 

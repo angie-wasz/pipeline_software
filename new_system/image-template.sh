@@ -15,7 +15,7 @@ module load python/3.11.6
 module load hyperdrive/0.6.1-cpu
 module load singularity/4.1.0-slurm
 
-trap 'python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
+trap 'module load python/3.11.6; python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
 
 sleep $(echo "scale=3; $RANDOM/32768*30" | bc)
 
@@ -94,9 +94,8 @@ echo "DATE"
 date -Iseconds
 
 rm *-t*
-rm -r {{obsid}}{{freq}}.ms
+rm -r ${ms}
 #rm -r {{obsid}}.ms
 
 module load python/3.11.6
-
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Done

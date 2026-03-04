@@ -11,8 +11,8 @@ HDF5=$(OBSID).hdf5
 SH=/bin/bash
 PYTHON=python
 
-GLEAM_TARGET : $(OBSID)_detections_$(SUFFIX).vot
+GLEAM_TARGET : $(OBSID)_$(FREQ)_detections_$(SUFFIX).vot
 
-$(OBSID)_detections_$(SUFFIX).vot : $(OBSID)_infield_$(SUFFIX).vot $(OBSID)_$(FREQ)_image_corr.vot $(OBSID)_$(FREQ)_image_moment2_corr.vot
-	$(SH) $(PIPELINE)/match_master.sh  $(OBSID)_infield_$(SUFFIX).vot $(OBSID)_$(FREQ)_image_corr.vot $(OBSID)_$(FREQ)_image_moment2_corr.vot $(OBSID)_detections_$(SUFFIX).vot $(RA) $(DE)
+$(OBSID)_${FREQ}_detections_$(SUFFIX).vot : $(OBSID)_$(FREQ)_infield_$(SUFFIX).vot $(OBSID)_$(FREQ)_image_corr.vot $(OBSID)_$(FREQ)_image_moment2_corr.vot
+	$(SH) $(PIPELINE)/match_master.sh  $(OBSID)_$(FREQ)_infield_$(SUFFIX).vot $(OBSID)_$(FREQ)_image_corr.vot $(OBSID)_$(FREQ)_image_moment2_corr.vot $(OBSID)_$(FREQ)_detections_$(SUFFIX).vot $(RA) $(DE)
 

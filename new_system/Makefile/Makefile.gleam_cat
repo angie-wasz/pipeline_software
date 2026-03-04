@@ -11,7 +11,7 @@ HDF5=$(OBSID).hdf5
 SH=/bin/bash
 PYTHON=python
 
-GLEAM_TARGET : $(OBSID)_infield_$(SUFFIX).vot
+GLEAM_TARGET : $(OBSID)_$(FREQ)_infield_$(SUFFIX).vot
 
-$(OBSID)_infield_$(SUFFIX).vot : $(HDF5)
-	$(PYTHON) $(PIPELINE)/make_obs_cat.py $(HDF5) $(CAT_PATH)/ips_gleam_vlssr_dr2_230802.fits $(OBSID)_infield_$(SUFFIX).vot --ra_col=$(RA) --dec_col=$(DE) -f $(FREQ)
+$(OBSID)_$(FREQ)_infield_$(SUFFIX).vot : $(HDF5)
+	$(PYTHON) $(PIPELINE)/make_obs_cat.py $(HDF5) $(CAT_PATH)/ips_gleam_vlssr_dr2_230802.fits $(OBSID)_$(FREQ)_infield_$(SUFFIX).vot --ra_col=$(RA) --dec_col=$(DE) -f $(FREQ)

@@ -167,11 +167,16 @@ fi
 
 bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}
 
-# g-level
-bash ./glevel.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG}
+output=$(python read_log.py -l ${LOG} -o ${OBSID})
+status=$(echo ${output} | cut -d "|" -f 4 | awk '{print $2}')
+if [[ "$status" == "Failed" ]]; then
+	echo "${OBSID} has failed image or post-image, exitting pipeline"
+	exit
+fi
 
-# Acacia storage
+# g-level and Acacia storage
 if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
+	bash ./glevel.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG}
 	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
 fi
 

@@ -50,7 +50,7 @@ echo "${OBSID} gleam2"
 make OBSID=${OBSID} scripts_dir=${scripts_dir} DATA=${DATA} -f ${makefile_dir}/Makefile.gleam2 -j 2
 
 echo "${OBSID} glevel"
-bash ${scripts_dir}/glevel_vot.sh ${OBSID} ${DATA}
+bash ${scripts_dir}/glevel_vot.sh ${OBSID} "121-132" ${DATA}
 
 ## Nevermind, gmap can be made externally
 #echo "${OBSID} gmap"
