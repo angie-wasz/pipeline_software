@@ -32,17 +32,17 @@ if [ ! -s {{obsid}}.metafits ]; then
 fi
 
 # FOR FULL BAND GLEAM OBS THIS DOESN'T WORK
-#cal_obs={{sun_coords[obsid]['cal_obs']}}
-#if [ ${cal_obs} -eq 0 ]; then
-#	echo "No calibrator observation exisits"
-#	exit 1
-#fi
-#cal_sol=${cal_obs}_ch{{freq}}.bin
-#cp /scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_sol} ./
+cal_obs={{sun_coords[obsid]['cal_obs']}}
+if [ ${cal_obs} -eq 0 ]; then
+	echo "No calibrator observation exisits"
+	exit 1
+fi
+cal_sol=${cal_obs}_ch{{freq}}.bin
+rsync -av /scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_sol} ./
 
 # FEED IN EACH GLEAM CH SOLUTION SEPARATELY
-cp {{cal_sol}} ./cal_sol_ch{{freq}}.bin
-cal_sol=cal_sol_ch{{freq}}.bin
+#cp {{cal_sol}} ./cal_sol_ch{{freq}}.bin
+#cal_sol=cal_sol_ch{{freq}}.bin
 
 echo "DATE"
 date -Iseconds

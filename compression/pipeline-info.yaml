@@ -9,10 +9,15 @@ skymodel: /software/projects/mwasci/awaszewski/catalogs/GGSM.txt
 sources: 250
 uvwmin: 130m
 uvwmax: 1300m
-#freq: 129-130
+freq: 129-130
 pols:
   - XX
   - YY
+
+# Self-cal parameters
+uvwmin_self: 10m
+uvwmax_self: 100m
+sources_self: 1
 
 # Solar Imaging parameters
 n_cpu: 32
@@ -45,9 +50,61 @@ sun_coords:
     ra: 10h08m19.6s
     dec: +11d28m27s
     cal_obs: 1061230112
-  '1061264416':
-    ra: 10h08m19.6s
-    dec: +11d28m27s
+  '1061264664':
+    ra: 10h08m20.2s
+    dec: +11d28m23s
+    cal_obs: 1061230112
+  '1061264912':
+    ra: 10h08m20.9s
+    dec: +11d28m20s
+    cal_obs: 1061230112
+  '1061265160':
+    ra: 10h08m21.5s
+    dec: +11d28m16s
+    cal_obs: 1061230112
+  '1061265408':
+    ra: 10h08m22.1s
+    dec: +11d28m13s
+    cal_obs: 1061230112
+  '1061265656':
+    ra: 10h08m22.8s
+    dec: +11d28m09s
+    cal_obs: 1061230112
+  '1061265904':
+    ra: 10h08m23.4s
+    dec: +11d28m06s
+    cal_obs: 1061230112
+  '1061266152':
+    ra: 10h08m24.0s
+    dec: +11d28m02s
+    cal_obs: 1061230112
+  '1061266400':
+    ra: 10h08m24.7s
+    dec: +11d27m59s
+    cal_obs: 1061230112
+  '1061266648':
+    ra: 10h08m25.3s
+    dec: +11d27m55s
+    cal_obs: 1061230112
+  '1061266896':
+    ra: 10h08m25.9s
+    dec: +11d27m52s
+    cal_obs: 1061230112
+  '1061267144':
+    ra: 10h08m26.6s
+    dec: +11d27m48s
+    cal_obs: 1061230112
+  '1061267392':
+    ra: 10h08m27.2s
+    dec: +11d27m45s
+    cal_obs: 1061230112
+  '1061267640':
+    ra: 10h08m27.8s
+    dec: +11d27m41s
+    cal_obs: 1061230112
+  '1061267888':
+    ra: 10h08m28.5s
+    dec: +11d27m38s
     cal_obs: 1061230112
   '1061437216':
     ra: 10h15m40.5s

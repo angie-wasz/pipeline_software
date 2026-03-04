@@ -18,8 +18,8 @@ ASVOID=$(python /software/projects/mwasci/awaszewski/new_system/read_log.py -l $
 
 echo "${OBSID} Calibration"
 
-singularity exec -B $PWD ${container} jinja2 calibrate-template.sh pipeline-info.yaml --format=yaml \
-	-D obsid=${OBSID} -D asvo=${ASVOID} -D output=${DATA}/${OBSID}-calibrate.out \
+singularity exec -B $PWD ${container} jinja2 self-calibrate-template.sh pipeline-info.yaml --format=yaml \
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D output=${DATA}/${OBSID}-calibrate.out -D freq='129-130' \
 	--strict -o ${DATA}/${OBSID}-calibrate.sh
 
 sbatch ${DATA}/${OBSID}-calibrate.sh
