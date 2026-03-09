@@ -44,9 +44,10 @@ date -Iseconds
 rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch{{freq}}.ms/ ./{{obsid}}.ms
 
 sky_model=sun_model_{{obsid}}.yaml
+rsync -av {{pipeline}}/{{obsid}}/${sky_model} ./
 
 hyperdrive di-calibrate -d {{obsid}}.ms {{obsid}}.metafits \
-	-s {{skymodel}} \
+	-s ${sky_model} \
 	--num-sources {{sources_self}} \
 	--uvw-min {{uvwmin_self}} \
 	--uvw-max {{uvwmax_self}} \

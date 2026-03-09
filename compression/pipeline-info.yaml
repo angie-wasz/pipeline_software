@@ -15,8 +15,8 @@ pols:
   - YY
 
 # Self-cal parameters
-uvwmin_self: 10m
-uvwmax_self: 100m
+uvwmin_self: 60m
+uvwmax_self: 120m
 sources_self: 1
 
 # Solar Imaging parameters

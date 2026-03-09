@@ -20,6 +20,8 @@ echo "${OBSID} Imaging"
 #freq='165-166'
 #cal_sol="/scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_obs}_ch${freq}_sols.bin"
 
+freq="129-130"
+
 singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
 	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} \
 	--strict -o ${DATA}/${OBSID}_ch${freq}-image.sh

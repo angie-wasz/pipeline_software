@@ -31,15 +31,14 @@ if giant-squid submit-conv ${OBSID} -d scratch \
 	rm asvo_${OBSID}
 
 	if [ -z "$ASVOID" ]; then
-    	echo "${OBSID} ASVOID does not exist"
+   		echo "${OBSID} ASVOID does not exist"
 	    exit 1
 	elif [[ ${#ASVOID} -ne 6 ]]; then
-    	echo "${OBSID} ASVOID of incorrect format, must be a 6 digit integer - what was provided: ${ASVOID}"
+   		echo "${OBSID} ASVOID of incorrect format, must be a 6 digit integer - what was provided: ${ASVOID}"
 	    exit 1
 	fi
 	
-	#Manually check when they're done
-	#python ../new_system/update_log.py -l ${LOG} -o ${OBSID} --status Complete --asvo ${ASVOID}
+	python ../new_system/update_log.py -l ${LOG} -o ${OBSID} --status Complete --asvo ${ASVOID}
 
 else
 

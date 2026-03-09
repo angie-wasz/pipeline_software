@@ -41,7 +41,7 @@ cal_sol=${cal_obs}_ch{{freq}}.bin
 rsync -av /scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_sol} ./
 
 # FEED IN EACH GLEAM CH SOLUTION SEPARATELY
-#cp {{cal_sol}} ./cal_sol_ch{{freq}}.bin
+#cp cal_sol ./cal_sol_ch{{freq}}.bin
 #cal_sol=cal_sol_ch{{freq}}.bin
 
 echo "DATE"
