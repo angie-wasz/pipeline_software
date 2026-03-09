@@ -5,7 +5,6 @@ CAT_PATH=/software/projects/mwasci/awaszewski/catalogs/
 SUFFIX=gleam
 RA=RAJ2000
 DE=DEJ2000
-HDF5=$(OBSID).hdf5
 
 SH=/bin/bash
 PYTHON=python

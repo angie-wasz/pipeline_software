@@ -32,7 +32,7 @@ cd ${DATA}
 
 # posinterp working
 echo "${OBSID} posinterp"
-singularity exec -B $PWD ${container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.posinterp -j 2
+singularity exec -B $PWD ${container} make OBSID=${OBSID} HDF5=${OBSID}.hdf5 scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.posinterp -j 2
 
 echo "${OBSID} calibrator"
 make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.cal -j 2
@@ -41,13 +41,13 @@ echo "${OBSID} ion"
 singularity exec -B $PWD ${gleam_container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.ion -j 2
 
 echo "${OBSID} gleam_cat"
-singularity exec -B $PWD ${gleam_container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.gleam_cat -j 2
+singularity exec -B $PWD ${gleam_container} make OBSID=${OBSID} HDF5=${OBSID}.hdf5 scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.gleam_cat -j 2
 echo "${OBSID} gleam1"
 make OBSID=${OBSID} scripts_dir=${scripts_dir} DATA=${DATA} -f ${makefile_dir}/Makefile.gleam1 -j 2
 echo "${OBSID} gleam_nsi"
-singularity exec -B $PWD ${gleam_container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.gleam_nsi -j 2
+singularity exec -B $PWD ${gleam_container} make OBSID=${OBSID} HDF5=${OBSID}.hdf5 scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.gleam_nsi -j 2
 echo "${OBSID} gleam2"
-make OBSID=${OBSID} scripts_dir=${scripts_dir} DATA=${DATA} -f ${makefile_dir}/Makefile.gleam2 -j 2
+make OBSID=${OBSID} HDF5=${OBSID}.hdf5 scripts_dir=${scripts_dir} DATA=${DATA} -f ${makefile_dir}/Makefile.gleam2 -j 2
 
 echo "${OBSID} glevel"
 bash ${scripts_dir}/glevel_vot.sh ${OBSID} "121-132" ${DATA}

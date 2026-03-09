@@ -2,7 +2,6 @@ FREQ=121-132
 PIPELINE=${scripts_dir}
 CONTINUUM=image
 VARIABILITY=image_moment2
-HDF5=${OBSID}.hdf5
 
 SH=/bin/bash
 PYTHON=python
