@@ -35,7 +35,7 @@ echo "${OBSID} posinterp"
 singularity exec -B $PWD ${container} make OBSID=${OBSID} HDF5=${OBSID}.hdf5 scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.posinterp -j 2
 
 echo "${OBSID} calibrator"
-make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.cal -j 2
+make OBSID=${OBSID} CAT_PATH=/software/projects/mwasci/awaszewski/catalogs/ scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.cal -j 2
 
 echo "${OBSID} ion"
 singularity exec -B $PWD ${gleam_container} make OBSID=${OBSID} scripts_dir=${scripts_dir} -f ${makefile_dir}/Makefile.ion -j 2
