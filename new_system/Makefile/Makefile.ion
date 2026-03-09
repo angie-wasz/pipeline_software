@@ -1,6 +1,5 @@
 FREQ=121-132
 PIPELINE=${scripts_dir}
-CAT_PATH=/software/projects/mwasci/awaszewski/catalogs/
 CONTINUUM=image
 VARIABILITY=image_moment2
 
