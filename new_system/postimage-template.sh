@@ -71,8 +71,7 @@ module unload py-scipy/1.14.1 py-astropy/5.1 py-mpi4py/4.0.1-py3.11.6
 singularity exec -B $PWD {{gleam_container}} BANE --cores 1 --compress {{obsid}}_{{freq}}_image_moment2.fits
 singularity exec -B $PWD {{gleam_container}} aegean --slice=0 --autoload --seedclip=4 --floodclip=3 --table {{obsid}}_{{freq}}_image_moment2.vot {{obsid}}_{{freq}}_image_moment2.fits
 
-# I don't think we need the _beam.hdf5
-#python ${scripts_dir}/make_beam_only.py {{obsid}}.hdf5 {{obsid}}_beam.hdf5 -f 121-132
+singularity exec -B $PWD {{container}} python3 ${scripts_dir}/make_beam_only.py {{obsid}}.hdf5 {{obsid}}_beam.hdf5 -f 121-132
 
 echo "DATE"
 date -Iseconds
