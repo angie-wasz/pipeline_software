@@ -127,12 +127,13 @@ def do_quality_calc(path, obs):
     #print(obs)
     t = float(obs)
     #obsids.append(t)
-    #timestr = Time(t, format='gps').utc.isot
-    obstime = datetime(1980, 1, 6) + timedelta(seconds=(t - (37-19)))
-    timestr = datetime.strftime(obstime, "%Y-%m-%d %H:%M")
+    timestr = Time(t, format='gps').utc.isot
+    #obstime = datetime(1980, 1, 6) + timedelta(seconds=(t - (37-19)))
+    #timestr = datetime.strftime(obstime, "%Y-%m-%d %H:%M")
     #print(timestr[-1], end=' ')
     #f = f"{path}{obs}/{obs}_160.bin"
-    f = f"{path}/{obs}_160.bin"
+    #f = f"{path}/{obs}_160.bin"
+    f = f"{path}/{obs}_sols_162MHz_160.bin"
     ao = fromfile(f)
     frac_bad = float(np.sum(np.isnan(ao))+np.sum(ao == 0.0)) / np.prod(ao.shape)
     ao2 = get_flavor_divided(ao, f"{path}/{obs}.metafits")
