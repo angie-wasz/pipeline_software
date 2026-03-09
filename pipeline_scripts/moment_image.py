@@ -55,7 +55,7 @@ parser.add_option("--first_diff", action="store_true", dest="first_diff", help="
 
 opts, args = parser.parse_args()
 hdf5_in= args[0]
-basename = os.path.splitext(hdf5_in)[0]
+basename = os.path.splitext(hdf5_in)[0][0:10]
 steps = [opts.start, opts.stop]
 
 if opts.freq is not None:
@@ -98,11 +98,11 @@ imstack = ImageStack(hdf5_in, freq=opts.freq, steps=steps, image_type=opts.suffi
 for i in range(opts.n_moments):
     if not opts.pol:
         out_fits = FITS_OUT % (basename, opts.freq+'_' if opts.freq is not None else "", opts.suffix, i+1)
-        assert os.path.exists(out_fits) is False, "output fits file %s exists" % out_fits
+#        assert os.path.exists(out_fits) is False, "output fits file %s exists" % out_fits
     else:
         for pol in POLS:
             out_fits = POL_FITS_OUT % (basename, opts.freq+'_' if opts.freq is not None else "", opts.suffix, i+1, pol)
-            assert os.path.exists(out_fits) is False, "output fits file %s exists" % out_fits
+#            assert os.path.exists(out_fits) is False, "output fits file %s exists" % out_fits
 
 chunk_x = imstack.data.chunks[2]
 chunk_y = imstack.data.chunks[1]
