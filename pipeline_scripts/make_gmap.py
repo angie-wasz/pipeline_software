@@ -60,16 +60,8 @@ def main():
 
     obstime = Time(obs, format='gps')
 
-    # create the gmap
-    fig, ax = plt.subplots(1,1, figsize=(6,5), dpi=150)
-    ax.set_aspect('equal')
-    ax.set_xlabel(r'$\theta _x$ [deg]')
-    ax.set_ylabel(r'$\theta _y$ [deg]')
-    ax.set_facecolor('gainsboro')
-    ax.set_title(f"{obstime.iso}")
-
     # g-level
-    TAB = f"{dir}/{obs}_glevel_simplify.vot"
+    TAB = f"{dir}/{obs}_121-132_glevel_simplify.vot"
     if not os.path.exists(TAB):
         print(f"ERROR: g-level data table {TAB} does not exist")
         exit(1)
@@ -77,30 +69,43 @@ def main():
 
     ra, dec, g = df.RAJ2000_1.to_numpy(), df.DEJ2000_1.to_numpy(), df.g.to_numpy()
     tx, ty = convert_to_solar(ra, dec, obstime)
-
-    ax.set_xlim([min(tx)-10, max(tx)+10])
-    ax.set_ylim([min(ty)-10, max(ty)+10])
-
-    print(f"Number of sources with g-level: {len(g)}")
     
-    ax.scatter(0,0, marker='*', c='tab:orange', s=100)
-    field = ax.scatter(tx, ty, c=g, marker='o',
+    if len(tx) > 0:
+        
+        print(f"Number of sources: {len(g)}")
+        
+        # create the gmap
+        fig, ax = plt.subplots(1,1, figsize=(6,5), dpi=150)
+        ax.set_aspect('equal')
+        ax.set_xlabel(r'$\theta _x$ [deg]')
+        ax.set_ylabel(r'$\theta _y$ [deg]')
+        ax.set_facecolor('gainsboro')
+        ax.set_title(f"{obstime.iso}")
+                     
+        ax.set_xlim([min(tx)-10, max(tx)+10])
+        ax.set_ylim([min(ty)-10, max(ty)+10])
+        ax.scatter(0,0, marker='*', c='tab:orange', s=100)
+
+        field = ax.scatter(tx, ty, c=g, marker='o',
                         cmap=cm,
                         norm=norm,
                         s=20,
                         edgecolors='dimgrey',
                         linewidths=0.2)
-    
-    bar = plt.colorbar(field, ax=ax, pad=0.01, label='g-level')
-    bar.minorticks_off()
-    bar.set_ticks([vmin, median, vmax])
-    bar.set_ticklabels(["{:.1f}".format(vmin), "{:.1f}".format(median), "{:.1f}".format(vmax)])
+                        
+        bar = plt.colorbar(field, ax=ax, pad=0.01, label='g-level')
+        bar.minorticks_off()
+        bar.set_ticks([vmin, median, vmax])
+        bar.set_ticklabels(["{:.1f}".format(vmin), "{:.1f}".format(median), "{:.1f}".format(vmax)])
 
-    print("Done, saving as .png")
+        print("Done, saving as .png")
 
-    fig.tight_layout()
-    fig.savefig(f'{dir}/{obs}_gmap.png', bbox_inches='tight')
-    plt.close()
+        fig.tight_layout()
+        fig.savefig(f'{dir}/{obs}_gmap.png', bbox_inches='tight')
+        plt.close()
+        
+    else:
+        print("No sources, not saving figure")
 
 if __name__ == '__main__':
     main()
