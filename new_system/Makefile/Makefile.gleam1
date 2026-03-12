@@ -1,4 +1,3 @@
-FREQ=121-132
 PIPELINE=${scripts_dir}
 CAT_PATH=/software/projects/mwasci/awaszewski/catalogs/
 GLEAM_CONTAINER=/software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img
