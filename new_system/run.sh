@@ -165,6 +165,7 @@ else
 	STAGE="full"
 fi
 
+DATA="/scratch/mwasci/awaszewski/pipeline/${OBSID}/"
 bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}
 
 output=$(python read_log.py -l ${LOG} -o ${OBSID})
