@@ -2,7 +2,7 @@
 
 import numpy as np
 import math
-#from astropy.time import Time
+from astropy.time import Time
 from datetime import datetime, timedelta
 from astropy.io import fits
 from aocal import fromfile
