@@ -27,5 +27,7 @@ nmiter: 5
 mgain: 0.8
 automask: 3
 autothresh: 2
-interval_start: 0
-interval_stop: 400
+#interval_start: 0
+#interval_stop: 400
+interval_start: 4
+interval_stop: 1196

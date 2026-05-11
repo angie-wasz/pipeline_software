@@ -70,7 +70,7 @@ if [ ! -d ${DATA} ]; then
 fi
 
 ASVO_SKIP=FALSE
-CAL_SKIP=FALSE
+#CAL_SKIP=FALSE
 
 # I'm aware that if a data directory already exists, its probably been processed previously but easier to check with log
 # Start log
@@ -108,13 +108,13 @@ else
 	fi
 		
 	# Has it been calibrated?
-	cal_sols=${DATA}/${OBSID}_sols_162MHz_160.bin
-	if [ -f ${cal_sols} ]; then
-		echo "${OBSID} calibration solutions are available. Skipping calibration"
-		CAL_SKIP=TRUE
-	else
-		echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
-	fi
+#	cal_sols=${DATA}/${OBSID}_sols_162MHz_160.bin
+#	if [ -f ${cal_sols} ]; then
+#		echo "${OBSID} calibration solutions are available. Skipping calibration"
+#		CAL_SKIP=TRUE
+#	else
+#		echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
+#	fi
 
 fi
 
@@ -124,8 +124,12 @@ if [ $ASVO_SKIP = FALSE ]; then
 	ASVOID=$(python read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
 fi
 
-# Calibration (if required)
-if [ $CAL_SKIP = FALSE ]; then
+cal_sols=${DATA}/${OBSID}_sols_162MHz_160.bin
+echo "${OBSID} Checking if calibration solutions exist"
+if [ -f ${cal_sols} ]; then
+	echo "${OBSID} calibration solutions are available. Skipping calibration"
+else
+	echo "${OBSID} calibration solutions do not exist. Proceeding with calibration"
 	bash ./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 fi
 

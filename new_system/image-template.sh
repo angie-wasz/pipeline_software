@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
 #SBATCH --mem=50G
-#SBATCH --time=10:00:00
+#SBATCH --time=12:00:00
 #SBATCH --export=NONE
 
 set -euxEo pipefail
@@ -41,11 +41,12 @@ if [ ! -s {{obsid}}.metafits ]; then
 	exit 1 
 fi
 
-new_ms={{obsid}}{{freq}}_avg.ms
+# ONLY REQUIRED WHEN AVERAGING UP MS WHICH WE'RE NOT FOR ALREADY CALIBRATED 2019 DATA
+#new_ms={{obsid}}{{freq}}_avg.ms
 # average up in frequency to reduce image time
-hyperdrive vis-convert --freq-average 4 -o ${new_ms} -d ${ms}
-rm -r ${ms}
-ms=${new_ms}
+#hyperdrive vis-convert --freq-average 4 -o ${new_ms} -d ${ms}
+#rm -r ${ms}
+#ms=${new_ms}
 
 cal_sol={{calsol}}
 
@@ -64,7 +65,7 @@ singularity exec -B $PWD {{gleam_container}} applysolutions ${ms} ${cal_sol}
 #ms={{obsid}}.ms
 
 # Flag tiles
-singularity exec -B $PWD {{gleam_container}} flagantennae ${ms} 100 101 121
+#singularity exec -B $PWD {{gleam_container}} flagantennae ${ms} 100 101 121
 
 echo "DATE"
 date -Iseconds
@@ -98,7 +99,6 @@ date -Iseconds
 
 rm *-t*
 rm -r ${ms}
-#rm -r {{obsid}}.ms
 
 module load python/3.11.6
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Done

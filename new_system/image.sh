@@ -68,7 +68,7 @@ while [ ${running} -eq 1 ]; do
 	if [[ "$output" == *"Running"* ]]; then
 		# Tracking how long the observation has been processing for
 		let "loops++"
-		if [ ${loops} -gt 70 ]; then
+		if [ ${loops} -gt 100 ]; then
 			echo "${OBSID} Imaging has timed-out and failed"
 			python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --status Failed
 			exit 1

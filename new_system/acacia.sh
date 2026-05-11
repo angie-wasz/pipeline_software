@@ -11,7 +11,7 @@ echo "${OBSID} Moving data to Acacia"
 
 # first create hdf5 transfer job
 FILES=${OBSID}.hdf5
-path=ips/hdf5_2025/
+path=ips/hdf5_2019/
 singularity exec -B $PWD ${container} jinja2 acacia-template.sh acacia-info.yaml --format yaml \
     -D jobName=${OBSID}-hdf5-acacia -D output=${copyouts}/${OBSID}-hdf5-acacia.out \
     -D path=${path} -D DATA=${DATA}/${OBSID} -D FILES=${FILES} \
