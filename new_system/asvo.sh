@@ -22,8 +22,8 @@ if giant-squid submit-conv ${OBSID} -w -d scratch \
     if [ -z "$ASVOID" ]; then
         echo "${OBSID} ASVOID does not exist"
         exit 1
-    elif [[ ${#ASVOID} -ne 6 ]]; then
-        echo "${OBSID} ASVOID of incorrect format, must be a 6 digit integer - what was provided: ${ASVOID}"
+    elif [[ ${#ASVOID} -ne 7 ]]; then
+        echo "${OBSID} ASVOID of incorrect format, must be a 7 digit integer - what was provided: ${ASVOID}"
         exit 1
     fi
 	
