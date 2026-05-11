@@ -3,13 +3,13 @@
 Help()
 {
 	echo " "
-	echo "-o/--obsids : a list of obsids that are to be processed, \\n separated. Mandatory"
+	echo "-o/--obsids : a list of obsids that are to be processed, \\n separated. Required"
 	echo "-n/--num-parallel : the number of jobs to run in parallel. Default is 8. Optional"
-	echo "-s/--safemode : if included, then data is not deleted from /scratch/asvo. CURRENTLY NOT IMPLEMENTED! Optional but recommended"
+	echo "-s/--safemode : if included, then data is not deleted from /scratch/asvo. CURRENTLY NOT IMPLEMENTED! All data is not being deleted"
 	echo "-c/--calibrate : if included, then will only run calibration portion of pipeline"
 	echo "-i/--image : if included, then will only run imaging (no post imaging, still does ASVO and calibration checks)"
 	echo "-p/--post-image : if included, then will only run post-image (no imaging, still does ASVO and calibration checks)"
-	echo "--skip-fail-check : if included then it won't check if an observation has failed in the past (which by default is skipped)"
+	echo "--skip-fail-check : if included then it won't check if an observation has failed in the past (failed observations are by default skipped)"
 	echo " "
 }
 while getopts ":h" option; do
