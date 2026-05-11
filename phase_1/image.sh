@@ -1,6 +1,7 @@
 OBSID=$1
+freq=$2
 DATA=/scratch/mwasci/awaszewski/pipeline/${OBSID}/
-LOG=/software/projects/mwasci/awaszewski/compression/compression_log.sqlite
+LOG=/software/projects/mwasci/awaszewski/phase_1/compression_log.sqlite
 
 module load python/3.11.6
 module load singularity/4.1.0-slurm
@@ -16,15 +17,13 @@ ASVOID=$(python /software/projects/mwasci/awaszewski/new_system/read_log.py -l $
 echo "${OBSID} Imaging"
 
 # WILL HAVE TO MANUALLY CHANGE THESE PARAMETERS FOR THE DIFFERENT GLEAM BANDS 
-#cal_obs=1061487040
-#freq='165-166'
-#cal_sol="/scratch/mwasci/awaszewski/pipeline/${cal_obs}/${cal_obs}_ch${freq}_sols.bin"
-
-#freq="129-130"
+#cal_obs=1061486560
+#freq='62-63'
+cal_sol="/scratch/mwasci/awaszewski/pipeline/${OBSID}/cal_sol_ch${freq}_sols_fine_160.bin"
 
 singularity exec -B $PWD ${container} jinja2 image-template_adjusted.sh pipeline-info.yaml --format=yaml \
-	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} \
-	--strict -o ${DATA}/${OBSID}_ch${freq}-image_adjusted.sh
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} -D freq=${freq} -D cal_sols=${cal_sol} -D output=${DATA}/${OBSID}_ch${freq}-image_fine.out \
+	--strict -o ${DATA}/${OBSID}_ch${freq}-image_fine.sh
 
 echo "${OBSID} Submitting image job"
-sbatch ${DATA}/${OBSID}_ch${freq}-image_adjusted.sh
+sbatch ${DATA}/${OBSID}_ch${freq}-image_fine.sh

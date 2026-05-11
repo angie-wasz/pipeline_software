@@ -9,8 +9,9 @@ skymodel: /software/projects/mwasci/awaszewski/catalogs/GGSM.txt
 sources: 250
 uvwmin: 130m
 uvwmax: 1300m
+#freq: 121-132
 #freq: 129-130
-freq: 150-161
+#freq: 150-161
 pols:
   - XX
   - YY
@@ -223,7 +224,38 @@ sun_coords:
     ra: 13h45m58.5s
     dec: -10d56m43s
     cal_obs: 1098047768
-
+  '1455331800':
+    ra: 22h00m59.0s
+    dec: -12d08m29s
+    cal_obs: 1455331816
+  '1455418200':
+    ra: 22h04m51.3s
+    dec: -11d47m28s
+    cal_obs: 1455418216
+  '1455516304':
+    ra: 22h09m14.2s
+    dec: -11d23m22s
+    cal_obs: 1455516320
+  '1455591000':
+    ra: 22h12m33.8s
+    dec: -11d04m52s
+    cal_obs: 1455591016
+  '1455677400':
+    ra: 22h16m24.0s
+    dec: -10d43m19s
+    cal_obs: 1455677416
+  '1455763800':
+    ra: 22h20m13.6s
+    dec: -10d21m36s
+    cal_obs: 1455763816
+  '1455850200':
+    ra: 22h24m02.5s
+    dec: -09d59m43s
+    cal_obs: 1455850216
+  '1062216056':
+    ra: 10h48m29.9s
+    dec: +07d34m46s
+    cal_obs: 1062272032
 
 channels:
   '1061230112':
