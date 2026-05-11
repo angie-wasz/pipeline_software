@@ -26,14 +26,16 @@ while [ ${running} -eq 1 ]; do
     if [[ "$output" == *"Failed"* ]]; then 
         
         echo "${OBSID} Calibration has failed"
+		running=0
         exit 1
 
     elif [[ "$output" == *"Complete" ]]; then   
         
+		echo "${OBSID} Calibration has finished successfully"
         running=0
-		module unload py-numpy/1.25.2 py-astropy/4.2.1
-        singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
-		module load py-numpy/1.25.2 py-astropy/4.2.1
+#		module unload py-numpy/1.25.2 py-astropy/4.2.1
+#		singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
+#		module load py-numpy/1.25.2 py-astropy/4.2.1
 
     fi
 done

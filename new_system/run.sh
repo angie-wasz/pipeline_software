@@ -123,8 +123,14 @@ if [ $CAL_SKIP = FALSE ]; then
 	bash ./calibrate.sh ${OBSID} ${ASVOID} ${DATA} ${SOFTWARE} ${LOG}
 fi
 
-# Data Quality (part of calibration)
+# Data Quality
 echo "${OBSID} Checking data quality"
+module load singularity/4.1.0-slurm
+module unload python/3.11.6 py-numpy/1.25.2 py-astropy/4.2.1
+container="/software/projects/mwasci/awaszewski/ips_post.img"
+singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
+module load python/3.11.6 py-numpy/1.25.2 py-astropy/4.2.1 
+
 frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
 resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
 echo "${OBSID} quality ${frac_bad} ${resid}"
@@ -134,10 +140,13 @@ if [[ -z "$frac_bad" || -z "$resid" ]]; then
 	exit 1
 fi
 
-if (( $(echo "$frac_bad > 0.6" | bc -l) )); then
-	if (( $(echo "$resid > 20" | bc -l) )); then
-		echo "${OBSID} Data quality does not meet requirements for further processing"
-		exit
+frac_bad_limit=0.6
+resid_limit=20
+if (( $(echo "$frac_bad > $frac_bad_limit" | bc -l) )); then
+	if (( $(echo "$resid > $resid_limit" | bc -l) )); then
+		echo "$OBSID Data quality does not meet requirements for further processing"
+		python update_log.py -l ${LOG} -o ${OBSID} --status 'Bad Quality'
+		exit 1
 	fi
 fi
 
@@ -175,10 +184,11 @@ if [[ "$status" == "Failed" ]]; then
 	exit
 fi
 
+FREQ=121-132
 # g-level and Acacia storage
-if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
-	bash ./glevel.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG}
-	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
-fi
+#if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
+#	bash ./glevel.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG} ${FREQ}
+#	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
+#fi
 
 echo "${OBSID} done"

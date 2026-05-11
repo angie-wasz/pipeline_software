@@ -10,6 +10,11 @@ module load singularity/4.1.0-slurm
 module load python/3.11.6
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 
+DATA="/scratch/mwasci/awaszewski/pipeline/${OBSID}/"
+SOFTWARE="/software/projects/mwasci/awaszewski/new_system/"
+LOG="new_system_test.sqlite"
+CAL_SOLS=${DATA}/${OBSID}_sols_162MHz_160.bin
+
 echo "${OBSID} Imaging and Post-imaging"
 
 if [[ ("${STAGE}" == "full") || ("${STAGE}" == "image") ]]; then
@@ -20,29 +25,23 @@ fi
 
 if [[ ("${STAGE}" == "full") || ("${STAGE}" == "post") ]]; then
 	singularity exec -B $PWD ${container} jinja2 postimage-template.sh pipeline-info.yaml --format=yaml \
-		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D data=${DATA}\
+		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D data=${DATA} \
 		--strict -o ${DATA}/${OBSID}-postimage.sh
 fi
 
 if [[ ("${STAGE}" == "full") ]]; then
-
 	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Imaging --status Queued
 	jobid=$(sbatch ${DATA}/${OBSID}-image.sh | cut -d " " -f 4)
 	sbatch --dependency=afterok:${jobid} ${DATA}/${OBSID}-postimage.sh
 	FINAL="Complete"
-
 elif [[ ("${STAGE}" == "image") ]]; then
-
 	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Imaging --status Queued
 	sbatch ${DATA}/${OBSID}-image.sh
 	FINAL="Done"
-
 elif [[ ("${STAGE}" == "post") ]]; then
-	
 	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Post-Image --status Queued
 	sbatch ${DATA}/${OBSID}-postimage.sh
 	FINAL="Complete"
-
 else
 	echo "${OBSID} stage passed incorrectly"
 	exit 1

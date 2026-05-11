@@ -63,6 +63,9 @@ singularity exec -B $PWD {{gleam_container}} applysolutions ${ms} ${cal_sol}
 #hyperdrive apply-solutions -d ${ms} -s ${cal_sol} -o {{obsid}}.ms
 #ms={{obsid}}.ms
 
+# Flag tiles
+singularity exec -B $PWD {{gleam_container}} flagantennae ${ms} 100 101 121
+
 echo "DATE"
 date -Iseconds
 
