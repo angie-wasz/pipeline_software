@@ -5,6 +5,8 @@ new_system/test_data/
 new_system/new_system_test.sqlite
 new_system/__pycache__/
 new_system/obs_lists/
+phase_1/obs_lists/
+phase_1/compression_log.sqlite
 quality_scripts/__pycache__/
 imstack/__pycache__/
 pipeline_scripts/__pycache__/
