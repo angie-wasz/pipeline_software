@@ -24,7 +24,7 @@ def main(args):
 	fits_tab = f"{data}/{obs}_sols.fits"
 	cal_fits = fits.open(fits_tab)
 	out_fits = cal_fits.copy()
-	
+
 	out_fits = extract_slice(cal_fits, out_fits, slice(start, stop))
 	out_fits.writeto(f"{data}/{obs}_ch{channel}_sols.fits", overwrite=True)
 
