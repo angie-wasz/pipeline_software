@@ -2,8 +2,8 @@
 set -euo pipefail
 # match against position and flux density calibration catalogue
 case $3 in
-	057-068)centroid=080;;
-	121-132)centroid=162;;
+	57-68) centroid=080;;
+	121-132) centroid=162;;
 esac
 
 gleam_container=/software/projects/mwasci/kross/GLEAM-X-pipeline_old/gleamx_container.img

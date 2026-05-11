@@ -18,7 +18,7 @@ opts, args = parser.parse_args()
 hdf5_in_path= args[0]
 hdf5_out_path= args[1]
 
-assert not os.path.exists(hdf5_out_path), "out path already exists!"
+#assert not os.path.exists(hdf5_out_path), "out path already exists!"
 
 if opts.freq is not None:
     group = opts.freq
