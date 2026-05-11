@@ -54,17 +54,19 @@ def main():
     args = parse_args()
 
     obs = args.obsid
-    dir = args.dir
+    dir = f"{args.dir}/{obs}"
 
     print(f"Generating g-map for {obs}")
 
     obstime = Time(obs, format='gps')
 
     # g-level
-    TAB = f"{dir}/{obs}_121-132_glevel_simplify.vot"
+    TAB = f"{dir}/{obs}_121-132_glevel.vot"
     if not os.path.exists(TAB):
-        print(f"ERROR: g-level data table {TAB} does not exist")
-        exit(1)
+        TAB = f"{dir}/{obs}_glevel.vot"
+        if not os.path.exists(TAB):
+            print(f"ERROR: g-level data table {TAB} does not exist")
+            exit(1)
     df = filtering_df(votable_to_pandas(TAB))
 
     ra, dec, g = df.RAJ2000_1.to_numpy(), df.DEJ2000_1.to_numpy(), df.g.to_numpy()
