@@ -22,7 +22,7 @@ def main(args):
 
 	# APPENDING YAML FILE
 	f_yaml = open('pipeline-info.yaml', 'a+')
-	f_yaml.write(f"  '{obs}':\n")
+	f_yaml.write(f"  '{obsid}':\n")
 	f_yaml.write(f"    ra: {sun_ra}\n")
 	f_yaml.write(f"    dec: {sun_dec}\n")
 	f_yaml.close()
