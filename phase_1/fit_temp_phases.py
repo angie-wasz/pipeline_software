@@ -173,6 +173,7 @@ def main():
     diff_angle = np.nanmedian(np.angle(caldiff), axis=1)
     diff_angle_fine = np.angle(caldiff)
 
+	print(f"{obsid} Plotting phase differences")
     plot_phase_diffs(obsid, obsid_cal, freq, dist, diff_angle, rg6_90, rg6_150, rg6_230)
 
 
@@ -191,6 +192,7 @@ def main():
     freqs = np.linspace(int(freq.split('-')[0]), int(freq.split('-')[1])+1, fine_chans)*1.28
 
     fit_gradients = []
+	print(f"{obsid} Fitting temperature ramp per fine channel")
     for chan in range(fine_chans):
 
         def least_squares(north_ramp, east_ramp, rg6_90_delay, rg6_150_delay, rg6_230_delay):
