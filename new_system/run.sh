@@ -136,6 +136,16 @@ fi
 # Data Quality
 echo "${OBSID} Checking data quality"
 
+metafits=${DATA}/${OBSID}.metafits
+if [ ! -s ${metafits} ]; then
+	echo "${OBSID} Metafits file isn't in data directory. Retrieving from online"
+	if [ ! -s ${ASVO}/${ASVOID}/${OBSID}.metafits ]; then
+		wget "http://ws.mwatelescope.org/metadata/fits?obs_id=${OBSID}" -qO ${DATA}/${OBSID}.metafits
+	else
+		cp ${ASVO}/${ASVOID}/${OBSID}.metafits ${DATA}/
+	fi
+fi
+
 module load singularity/4.1.0-slurm
 module unload python/3.11.6 py-numpy/1.25.2 py-astropy/4.2.1
 
