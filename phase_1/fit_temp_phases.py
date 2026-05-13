@@ -1,3 +1,5 @@
+# Rewrite to only take a single observation
+
 import argparse, os
 import numpy as np
 import pandas as pd
@@ -15,11 +17,11 @@ from matplotlib.gridspec import GridSpecFromSubplotSpec
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-l', '--list', type=str, required=True, help='List of obsids')
-    parser.add_argument('-f', '--freq', type=str, default='129-130')
+    parser.add_argument('-o', '--obsid', type=str, required=True, help='Obsid')
+    parser.add_argument('-f', '--freq', type=str, default='129-130', help='The frequency channels of the observation')
     parser.add_argument('--fine_chans', type=int, default=64, help='The number of fine channels')
-    parser.add_argument('--cal_obs', type=int)
-    parser.add_argument('--fit_gradient', type=float)
+    parser.add_argument('--cal_obs', type=int, required=True, help='Calibrator observation')
+    parser.add_argument('--fit_gradient', type=float, help='Will overwrite the temperature ramp found from observations')
     args = parser.parse_args()
     return args
 
@@ -120,10 +122,10 @@ ERROR=0.1
 NUM_FREQ_CHANNELS=10
 FLAVOR_LENGTHS = np.array([90, 150, 230, 320, 400, 524])
 
-
 def main():
-
-    args = parse_args()
+	
+	obsid = args['obsid']
+	cal_obsid = args['cal_obsid']
 
     # tab = Table.read("phase1_2013.fits")
     tab = pd.read_csv("phase1_2013_calibrators.csv")
@@ -341,4 +343,5 @@ def main():
     # np.savetxt(f'{file_name}_{freq}_fits.txt', np.array(fit_gradients), delimiter=',')
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    main(vars(args))
