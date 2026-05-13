@@ -48,6 +48,11 @@ fi
 #rm -r ${ms}
 #ms=${new_ms}
 
+# Potentially add in removing .lock file in ms to speed up apply solutions
+#if [ -f ${ms}/table.lock ]; then
+#	rm ${ms}/table.lock
+#fi
+
 cal_sol={{calsol}}
 
 echo "DATE"
