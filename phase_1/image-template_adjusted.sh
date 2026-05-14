@@ -41,12 +41,6 @@ echo "DATE"
 date -Iseconds
 
 # CALIBRATION SOLUTION
-#cal_obs={{sun_coords[obsid]['cal_obs']}}
-#if [ ${cal_obs} -eq 0 ]; then
-#	echo "No calibrator observation exisits"
-#	exit 1
-#fi
-#cal_sol=${cal_obs}_ch{{freq}}_sols_temp-adjusted.bin
 cal_sol={{cal_sols}}
 
 echo "DATE"
