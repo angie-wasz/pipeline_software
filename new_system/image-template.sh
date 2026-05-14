@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_core}}
 #SBATCH --mem=50G
-#SBATCH --time=12:00:00
+#SBATCH --time=24:00:00
 #SBATCH --export=NONE
 
 set -euxEo pipefail
@@ -49,9 +49,9 @@ fi
 #ms=${new_ms}
 
 # Potentially add in removing .lock file in ms to speed up apply solutions
-#if [ -f ${ms}/table.lock ]; then
-#	rm ${ms}/table.lock
-#fi
+if [ -f ${ms}/table.lock ]; then
+	rm ${ms}/table.lock
+fi
 
 cal_sol={{calsol}}
 
