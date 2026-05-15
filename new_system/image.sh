@@ -61,6 +61,7 @@ while [ ${running} -eq 1 ]; do
 
     elif [[ "$output" == *"${FINAL}"* ]]; then
 
+		echo "${OBSID} Imaging has completed"
         running=0
 
     fi
