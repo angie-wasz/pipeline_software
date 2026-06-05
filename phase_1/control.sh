@@ -55,6 +55,6 @@ echo " "
 
 # Kick off the pipeline
 echo "Begin processing"
-cat ${OBSIDS} | xargs -P $NUM_PARALLEL -d $'\n' -n 1 bash ./image.sh  
+cat ${OBSIDS} | xargs -P $NUM_PARALLEL -d $'\n' -n 1 bash ./asvo.sh  
 echo "Finished processing"
 

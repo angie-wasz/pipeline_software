@@ -19,11 +19,13 @@ echo "${OBSID} Imaging"
 # WILL HAVE TO MANUALLY CHANGE THESE PARAMETERS FOR THE DIFFERENT GLEAM BANDS 
 #cal_obs=1061486560
 #freq='62-63'
+#cal_sol="/scratch/mwasci/awaszewski/pipeline/${OBSID}/${OBSID}_ch${freq}_sols.bin"
 cal_sol="/scratch/mwasci/awaszewski/pipeline/${OBSID}/cal_sol_ch${freq}_sols_fine_160.bin"
 
-singularity exec -B $PWD ${container} jinja2 image-template_adjusted.sh pipeline-info.yaml --format=yaml \
-	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} -D freq=${freq} -D cal_sols=${cal_sol} -D output=${DATA}/${OBSID}_ch${freq}-image_fine.out \
-	--strict -o ${DATA}/${OBSID}_ch${freq}-image_fine.sh
+singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} -D freq=${freq} -D cal_sols=${cal_sol} -D output=${DATA}/${OBSID}_ch${freq}-image.out \
+	--strict -o ${DATA}/${OBSID}_ch${freq}-image.sh
+#	-D freq_start=125 -D freq_stop=126 \
 
 echo "${OBSID} Submitting image job"
-sbatch ${DATA}/${OBSID}_ch${freq}-image_fine.sh
+sbatch ${DATA}/${OBSID}_ch${freq}-image.sh

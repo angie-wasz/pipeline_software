@@ -16,8 +16,8 @@ hyperdrive -V
 
 # Move into temp dir
 cd /tmp
-mkdir {{obsid}}
-cd {{obsid}}/
+mkdir {{obsid}}_{{freq}}
+cd {{obsid}}_{{freq}}/
 
 echo "DATE"
 date -Iseconds
@@ -65,5 +65,5 @@ rsync -av {{obsid}}_ch{{freq}}_sols.fits \
 	{{pipeline}}/{{obsid}}/
 
 cd ../
-rm -r {{obsid}}/
+rm -r {{obsid}}_{{freq}}/
 
