@@ -6,7 +6,7 @@ DATA=$5
 SOFTWARE=$6
 LOG=$7
 
-module load singularity/4.1.0-slurm
+module load singularity/4.3.5-slurm
 module load python/3.11.6
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 

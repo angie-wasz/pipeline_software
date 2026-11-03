@@ -9,7 +9,7 @@ container="/software/projects/mwasci/awaszewski/ips_post.img"
 makefile_dir=${SOFTWARE}/Makefile
 scripts_dir="/software/projects/mwasci/awaszewski/pipeline_scripts"
 
-module load singularity/4.1.0-slurm
+module load singularity/4.3.5-slurm
 
 # check that the files required exist
 ## required files

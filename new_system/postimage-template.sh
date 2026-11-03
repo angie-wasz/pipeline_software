@@ -10,7 +10,7 @@
 
 set -exE
 
-module load singularity/4.1.0-slurm
+module load singularity/4.3.5-slurm
 module load python/3.11.6
 
 trap 'module load python/3.11.6; python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR

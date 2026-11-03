@@ -1,4 +1,4 @@
-module load singularity/4.1.0-slurm
+module load singularity/4.3.5-slurm
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 
 OBSID=$1

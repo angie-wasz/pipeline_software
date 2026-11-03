@@ -13,7 +13,7 @@ set -euxEo pipefail
 
 # Load relevant modules
 module load python/3.11.6
-module load singularity/4.1.0-slurm
+module load singularity/4.3.5-slurm
 module load hyperdrive/0.6.1
 hyperdrive -V
 

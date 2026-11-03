@@ -146,7 +146,7 @@ if [ ! -s ${metafits} ]; then
 	fi
 fi
 
-module load singularity/4.1.0-slurm
+module load singularity/4.3.5-slurm
 module unload python/3.11.6 py-numpy/1.25.2 py-astropy/4.2.1
 
 container="/software/projects/mwasci/awaszewski/ips_post.img"
