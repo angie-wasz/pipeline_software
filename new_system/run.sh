@@ -203,21 +203,44 @@ fi
 DATA="/scratch/mwasci/awaszewski/pipeline/${OBSID}/"
 bash ./image.sh ${STAGE} ${OBSID} ${ASVOID} ${cal_sols} ${DATA} ${SOFTWARE} ${LOG}
 
-# Did it successfully image?
-output=$(python read_log.py -l ${LOG} -o ${OBSID})
-status=$(echo ${output} | cut -d "|" -f 4 | awk '{print $2}')
-if [[ "$status" == "Failed" ]]; then
-	echo "${OBSID} has failed image or post-image, exiting pipeline"
-	exit
-fi
-
 # g-level and Acacia storage
-# If post image was run, then do post processing
-#FREQ='121-132'
-if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
-# CURRENTLY HAVE ISSUES WITH THIS PART, WEIRD CONTAINER ISSUES
-#	bash ./glevel.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG} ${FREQ}
-	bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
+# No matter what we want to put something on Acacia, well actually we only want to put the ones that failed post-image
+# since I re-run the ones that failed imaging cause that is usually just a time-out error
+
+# first do a bunch of error checks
+output=$(python read_log.py -l ${LOG} -o ${OBSID})
+stage=$(echo ${output} | cut -d "|" -f 3 | awk '{print $2}')
+status=$(echo ${output} | cut -d "|" -f 4 | awk '{print $2}')
+if [[ "$STAGE" == "image" ]]; then
+	if [[ ("$stage" == "Imaging") && ("$status" == "Failed") ]]; then
+		echo "${OBSID} Imaging has failed, most likely time-out but check before running again"
+		exit 1
+	elif [[ ("$stage" == "Imaging") && ("$status" == "Done") ]]; then
+		echo "${OBSID} Imaging was successful, as only imaging selected finishing pipeline here (no saving to acacia)"
+		exit
+	fi
+elif [[ "$STAGE" == "full" ]]; then
+	if [[ ("$stage" == "Imaging") && ("$status" == "Failed") ]]; then
+		echo "${OBSID} Imaging has failed, not continuing with rest of pipeline or saving, most likely timeout but check before running again"
+		exit 1
+	fi
 fi
 
-echo "${OBSID} done"
+# In theory, only successfully imaged would get to this point
+if [[ ("$STAGE" == "full") || ("$STAGE" == "post") ]]; then
+	if [[ "$stage" == "Post-Image" ]]; then
+		echo "${OBSID} Post-imaging was attempted, therefore saving to acacia"
+		bash ./acacia.sh ${OBSID} ${SCRATCH} ${SOFTWARE}
+		# in theory only successfully post-imaged would then go onto g-level
+		if [[ "$status" == "Failed" ]]; then 
+			echo "${OBSID} Post-image failed, not attemping scintillation analysis and exitting"
+			exit 1
+		elif [[ "$status" == "Complete" ]]; then
+			echo "${OBSID} Scintillating sources successfully found, continuing with g-level"
+			# CURRENTLY HAVE ISSUES WITH THIS PART, WEIRD CONTAINER ISSUES
+			#bash ./glevel.sh ${OBSID} ${DATA} ${SOFTWARE} ${LOG} ${FREQ}
+		fi
+	fi
+fi
+
+echo "${OBSID} processing complete"

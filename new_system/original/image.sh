@@ -1,0 +1,91 @@
+STAGE=$1
+OBSID=$2
+ASVOID=$3
+CAL_SOLS=$4
+DATA=$5
+SOFTWARE=$6
+LOG=$7
+
+module load singularity/4.1.0-slurm
+module load python/3.11.6
+container="/software/projects/mwasci/awaszewski/ips_post.img"
+
+DATA="/scratch/mwasci/awaszewski/pipeline/${OBSID}/"
+SOFTWARE="/software/projects/mwasci/awaszewski/new_system/"
+LOG="new_system_test.sqlite"
+CAL_SOLS=${DATA}/${OBSID}_sols_162MHz_160.bin
+
+echo "${OBSID} Imaging and Post-imaging"
+
+if [[ ("${STAGE}" == "full") || ("${STAGE}" == "image") ]]; then
+	singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
+		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D calsol=${CAL_SOLS} -D data=${DATA} \
+		--strict -o ${DATA}/${OBSID}-image.sh
+fi
+
+if [[ ("${STAGE}" == "full") || ("${STAGE}" == "post") ]]; then
+	singularity exec -B $PWD ${container} jinja2 postimage-template.sh pipeline-info.yaml --format=yaml \
+		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D data=${DATA} \
+		--strict -o ${DATA}/${OBSID}-postimage.sh
+fi
+
+if [[ ("${STAGE}" == "full") ]]; then
+	
+	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Imaging --status Queued
+	
+	jobid=$(sbatch ${DATA}/${OBSID}-image.sh | cut -d " " -f 4)
+	sbatch --dependency=afterok:${jobid} ${DATA}/${OBSID}-postimage.sh
+	
+	FINAL="Complete"
+
+elif [[ ("${STAGE}" == "image") ]]; then
+
+	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Imaging --status Queued
+
+	sbatch ${DATA}/${OBSID}-image.sh
+	FINAL="Done"
+
+elif [[ ("${STAGE}" == "post") ]]; then
+
+	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Post-Image --status Queued
+
+	sbatch ${DATA}/${OBSID}-postimage.sh
+	FINAL="Complete"
+
+else
+	echo "${OBSID} stage passed incorrectly"
+	exit 1
+fi
+
+running=1
+loops=0
+while [ ${running} -eq 1 ]; do
+
+    sleep 600
+    output=$(python read_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} | cut -d "|" -f 4)
+
+    if [[ "$output" == *"Failed"* ]]; then
+
+        echo "${OBSID} Imaging has failed"
+        exit 1
+
+    elif [[ "$output" == *"${FINAL}"* ]]; then
+
+		echo "${OBSID} Imaging has completed"
+        running=0
+
+    fi
+	
+	if [[ "$output" == *"Running"* ]]; then
+		# Tracking how long the observation has been processing for
+		let "loops++"
+		if [ ${loops} -gt 100 ]; then
+			echo "${OBSID} Imaging has timed-out and failed"
+			python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --status Failed
+			exit 1
+		fi
+	fi
+	
+done
+
+echo "${OBSID} Imaging and Post-imaging complete"

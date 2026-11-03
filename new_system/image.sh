@@ -18,8 +18,16 @@ CAL_SOLS=${DATA}/${OBSID}_sols_162MHz_160.bin
 echo "${OBSID} Imaging and Post-imaging"
 
 if [[ ("${STAGE}" == "full") || ("${STAGE}" == "image") ]]; then
+#	singularity exec -B $PWD ${container} jinja2 avg_ms-template.sh	pipeline-info.yaml --format=yaml \
+#		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D data=${DATA} \
+#		--strict -o ${DATA}/${OBSID}-avg.sh
+
+	singularity exec -B $PWD ${container} jinja2 chg_apply-template.sh pipeline-info.yaml --format=yaml \
+		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D data=${DATA} -D calsol=${CAL_SOLS} \
+		--strict -o ${DATA}/${OBSID}-apply.sh
+
 	singularity exec -B $PWD ${container} jinja2 image-template.sh pipeline-info.yaml --format=yaml \
-		-D obsid=${OBSID} -D asvo=${ASVOID} -D log=${LOG} -D calsol=${CAL_SOLS} -D data=${DATA} \
+		-D obsid=${OBSID} -D asvo=${ASVO} -D log=${LOG} -D data=${DATA} \
 		--strict -o ${DATA}/${OBSID}-image.sh
 fi
 
@@ -30,18 +38,33 @@ if [[ ("${STAGE}" == "full") || ("${STAGE}" == "post") ]]; then
 fi
 
 if [[ ("${STAGE}" == "full") ]]; then
+
 	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Imaging --status Queued
-	jobid=$(sbatch ${DATA}/${OBSID}-image.sh | cut -d " " -f 4)
+	
+#	avg_jobid=$(sbatch ${DATA}/${OBSID}-avg.sh | cut -d " " -f 4)
+	apply_jobid=$(sbatch ${DATA}/${OBSID}-apply.sh | cut -d " " -f 4)
+	jobid=$(sbatch --dependency=afterok:${apply_jobid} ${DATA}/${OBSID}-image.sh | cut -d " " -f 4)
 	sbatch --dependency=afterok:${jobid} ${DATA}/${OBSID}-postimage.sh
+
 	FINAL="Complete"
+
 elif [[ ("${STAGE}" == "image") ]]; then
+	
 	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Imaging --status Queued
-	sbatch ${DATA}/${OBSID}-image.sh
+	
+#	avg_jobid=$(sbatch ${DATA}/${OBSID}-avg.sh | cut -d " " -f 4)
+	apply_jobid=$(sbatch ${DATA}/${OBSID}-apply.sh | cut -d " " -f 4)
+	sbatch --dependency=afterok:${apply_jobid} ${DATA}/${OBSID}-image.sh 
+	
 	FINAL="Done"
+
 elif [[ ("${STAGE}" == "post") ]]; then
+
 	python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --stage Post-Image --status Queued
+
 	sbatch ${DATA}/${OBSID}-postimage.sh
 	FINAL="Complete"
+
 else
 	echo "${OBSID} stage passed incorrectly"
 	exit 1
@@ -57,7 +80,8 @@ while [ ${running} -eq 1 ]; do
     if [[ "$output" == *"Failed"* ]]; then
 
         echo "${OBSID} Imaging has failed"
-        exit 1
+		running=0
+        #exit 1 I'll actually handle the fail in the main part of the pipeline instead
 
     elif [[ "$output" == *"${FINAL}"* ]]; then
 
@@ -68,11 +92,12 @@ while [ ${running} -eq 1 ]; do
 	
 	if [[ "$output" == *"Running"* ]]; then
 		# Tracking how long the observation has been processing for
-		let "loops++"
-		if [ ${loops} -gt 100 ]; then
+		loops=$((loops+1))
+		if (( loops > 150 )); then
 			echo "${OBSID} Imaging has timed-out and failed"
 			python update_log.py -l ${SOFTWARE}/${LOG} -o ${OBSID} --status Failed
-			exit 1
+			running=0
+			#exit 1
 		fi
 	fi
 	

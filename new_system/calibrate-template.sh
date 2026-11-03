@@ -6,6 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --time=00:30:00
 #SBATCH --gres=gpu:4
+#SBATCH --ntasks=4
 #SBATCH --export=NONE
 
 set -euxEo pipefail
@@ -49,7 +50,6 @@ export MWA_BEAM_FILE=/scratch/references/mwa/beam-models/mwa_full_embedded_eleme
 echo "DATE"
 date -Iseconds
 
-
 # 121-132 calibration
 rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms/ ./{{obsid}}.ms
 
@@ -68,10 +68,8 @@ hyperdrive solutions-convert {{obsid}}_sols_162MHz.fits {{obsid}}_sols_162MHz.bi
 
 singularity exec -B $PWD {{container}} python3 {{software}}/pipeline_scripts/aocal_interp.py -a 4 {{obsid}}_sols_162MHz.bin {{obsid}}_sols_162MHz_160.bin
 
-
 echo "DATE"
 date -Iseconds
-
 
 # 57-68 calibration
 rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch57-68.ms/ ./{{obsid}}.ms
@@ -89,8 +87,6 @@ hyperdrive solutions-convert {{obsid}}_sols_80MHz.fits {{obsid}}_sols_80MHz.bin
 
 singularity exec -B $PWD {{container}} python3 {{software}}/pipeline_scripts/aocal_interp.py -a 4 {{obsid}}_sols_80MHz.bin {{obsid}}_sols_80MHz_160.bin
 
-# Clean up
-
 # Transfer data back to scratch
 rsync -av {{obsid}}_sols*.fits \
 	{{obsid}}*.png \
@@ -98,6 +94,7 @@ rsync -av {{obsid}}_sols*.fits \
 	{{obsid}}.metafits \
 	{{pipeline}}/{{obsid}}/
 
+# Clean up
 cd ../
 rm -r {{obsid}}/
 

@@ -4,11 +4,10 @@
 #SBATCH --job-name={{obsid}}_ips_image
 #SBATCH --output={{data}}/{{obsid}}-image.out
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node={{n_core}}
-#SBATCH --mem=50G
-#SBATCH --time=24:00:00
+#SBATCH --time=20:00:00
 #SBATCH --export=NONE
-
+#SBATCH --ntasks-per-node={{n_core}}
+#SBATCH --mem={{mem}}G
 set -euxEo pipefail
 
 module load python/3.11.6
@@ -17,16 +16,19 @@ module load singularity/4.1.0-slurm
 
 trap 'module load python/3.11.6; python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Failed' ERR
 
-sleep $(echo "scale=3; $RANDOM/32768*30" | bc)
-
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Running 
 
 imstack={{software}}/imstack/
 
-cd {{data}}
+echo "DATE"
+date -Iseconds
 
-rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch121-132.ms/ ./{{obsid}}{{freq}}.ms
-ms={{obsid}}{{freq}}.ms
+# Go to /scratch where the data is
+cd {{data}}
+ms={{obsid}}_{{freq}}_sols.ms
+
+echo "DATE"
+date -Iseconds
 
 if [ ! -s {{obsid}}.metafits ]; then
 	if [ ! -s /scratch/mwasci/asvo/{{asvo}}/{{obsid}}.metafits ]; then
@@ -41,36 +43,9 @@ if [ ! -s {{obsid}}.metafits ]; then
 	exit 1 
 fi
 
-# ONLY REQUIRED WHEN AVERAGING UP MS WHICH WE'RE NOT FOR ALREADY CALIBRATED 2019 DATA
-#new_ms={{obsid}}{{freq}}_avg.ms
-# average up in frequency to reduce image time
-#hyperdrive vis-convert --freq-average 4 -o ${new_ms} -d ${ms}
-#rm -r ${ms}
-#ms=${new_ms}
-
-# Potentially add in removing .lock file in ms to speed up apply solutions
 if [ -f ${ms}/table.lock ]; then
 	rm ${ms}/table.lock
 fi
-
-cal_sol={{calsol}}
-
-echo "DATE"
-date -Iseconds
-
-# Change centre
-singularity exec -B $PWD {{gleam_container}} chgcentre -minw -shiftback ${ms}
-
-echo "DATE"
-date -Iseconds
-
-# Apply calibration solutions
-singularity exec -B $PWD {{gleam_container}} applysolutions ${ms} ${cal_sol}
-#hyperdrive apply-solutions -d ${ms} -s ${cal_sol} -o {{obsid}}.ms
-#ms={{obsid}}.ms
-
-# Flag tiles
-#singularity exec -B $PWD {{gleam_container}} flagantennae ${ms} 100 101 121
 
 echo "DATE"
 date -Iseconds
@@ -103,7 +78,6 @@ echo "DATE"
 date -Iseconds
 
 rm *-t*
-rm -r ${ms}
 
 module load python/3.11.6
 python {{software}}/new_system/update_log.py -l {{software}}/new_system/{{log}} -o {{obsid}} --status Done
