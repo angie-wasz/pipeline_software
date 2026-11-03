@@ -73,14 +73,14 @@ singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem
 
 # CREATE HDF5
 module load python/3.11.6 py-scipy/1.14.1 py-astropy/4.2.1 py-h5py/3.12.1 py-numpy/1.25.2
-python /software/projects/mwasci/awaszewski/phase_1/make_hdf5.py --start=0 --suffixes=image --outfile={{obsid}}_{{freq}}_ds_standard.hdf5 {{obsid}} --bands={{freq}}
+python /software/projects/mwasci/awaszewski/phase_1/make_hdf5.py --start=0 --suffixes=image --outfile={{obsid}}_{{freq}}_ds_rfi.hdf5 {{obsid}} --bands={{freq}}
 module unload py-numpy/1.25.2 py-h5py/3.12.1 py-scipy/1.14.1 py-astropy/4.2.1
 
 echo "DATE"
 date -Iseconds
 
 # TRANSFER DATA
-cp {{obsid}}_{{freq}}_ds_standard.hdf5 {{data}}/
+cp {{obsid}}_{{freq}}_ds_rfi.hdf5 {{data}}/
 
 # CLEAN UP
 rm *{{freq}}*-t*

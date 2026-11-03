@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node={{n_cpu}}
 #SBATCH --mem={{mem}}G
-#SBATCH --time=12:00:00
+#SBATCH --time=02:00:00
 #SBATCH --export=NONE
 
 set -euxEo pipefail
@@ -59,5 +59,11 @@ singularity exec -B $PWD {{gleam_container}} applysolutions ${ms} ${cal_sol}
 singularity exec -B $PWD {{gleam_container}} flagantennae ${ms} 101 105
 
 # STANDARD IMAGE
-singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem}} -name {{obsid}}_{{freq}}_fine --pol xx,yy -size {{size}} {{size}} -join-polarizations -niter {{niter}} -minuv-l {{minuv_l}} -nmiter {{nmiter}} -auto-threshold {{autothresh}} -auto-mask {{automask}} -taper-inner-tukey {{taper_inner_tukey}} -taper-gaussian {{taper}} -scale {{scale}} -reorder -log-time ${ms}
+# Using Lami's multiscale parameters
+#singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem}} -name {{obsid}}_{{freq}}_multiscale -pol xx,yy -size {{size}} {{size}} -join-polarizations -multiscale -multiscale-scale-bias {{multiscale_bias}} -local-rms -local-rms-window {{rms_window}} -niter {{niter_multi}} -minuv-l {{minuv_l}} -nmiter {{nmiter}} -auto-threshold {{autothresh_multi}} -auto-mask {{automask_multi}} -taper-inner-tukey {{taper_inner_tukey}} -taper-gaussian {{taper}} -scale {{scale}} -reorder -log-time ${ms}
 
+# No multiscale
+singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem}} -name {{obsid}}_{{freq}}_scaled -pol xx,yy -size {{size}} {{size}} -join-polarizations -niter {{niter}} -minuv-l {{minuv_l}} -nmiter {{nmiter}} -auto-threshold {{autothresh}} -auto-mask {{automask}} -taper-inner-tukey {{taper_inner_tukey}} -taper-gaussian {{taper}} -scale {{scale}} -reorder -log-time ${ms}
+
+# Check if we can reduce imaging
+#singularity exec -B $PWD {{gleam_container}} wsclean -j {{n_cpu}} -abs-mem {{mem}} -name {{obsid}}_{{freq}}_check -pol xx,yy -size {{size}} {{size}} -join-polarizations -niter {{niter}} -minuv-l {{minuv_l}} -auto-threshold {{autothresh}} -auto-mask {{automask}} -taper-gaussian {{taper}} -scale {{scale}} -reorder -log-time ${ms}

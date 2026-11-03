@@ -43,7 +43,7 @@ date -Iseconds
 
 rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch{{freq}}.ms/ ./{{obsid}}_ch{{freq}}.ms
 
-sky_model=sun_model_{{obsid}}.yaml
+sky_model=sun_model_{{obsid}}_{{freq}}.yaml
 rsync -av {{pipeline}}/{{obsid}}/${sky_model} ./
 
 hyperdrive di-calibrate -d {{obsid}}_ch{{freq}}.ms {{obsid}}.metafits \
@@ -55,10 +55,6 @@ hyperdrive di-calibrate -d {{obsid}}_ch{{freq}}.ms {{obsid}}.metafits \
 	-o {{obsid}}_ch{{freq}}_sols_160.fits
 
 hyperdrive plot-solutions {{obsid}}_ch{{freq}}_sols_160.fits
-
-# separate script that extracts the frequency channels required
-# then convert into bin
-# then aocal interp up to 160kHz? 
 
 # Transfer data back to scratch
 rsync -av {{obsid}}_ch{{freq}}_sols_160.fits \

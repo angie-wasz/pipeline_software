@@ -8,14 +8,20 @@ module load singularity/4.1.0-slurm
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 
 ASVOID=$(python /software/projects/mwasci/awaszewski/new_system/read_log.py -l ${LOG} -o ${OBSID} | cut -d "|" -f 2 | awk '{print $2}')
+#ASVOID=1082551 # ds imaging the no rfi flagged obs, then do fine
+#ASVOID=1082543 # rfi flagged 
 
 echo "${OBSID} Imaging"
 
 cal_sol="/scratch/mwasci/awaszewski/pipeline/${OBSID}/cal_sol_ch${freq}_sols_fine_160.bin"
+if [ ! -f ${cal_sol} ]; then
+	echo "${OBSID} Converting solutions"
+	bash convert_solutions.sh ${OBSID} ${freq}
+fi
 
 singularity exec -B $PWD ${container} jinja2 dynamic-spectrum-imaging.sh pipeline-info.yaml --format=yaml \
-	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} -D freq=${freq} -D cal_sols=${cal_sol} -D output=${DATA}/${OBSID}_ch${freq}-image_ds.out \
-	--strict -o ${DATA}/${OBSID}_ch${freq}-image_ds.sh
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D data=${DATA} -D freq=${freq} -D cal_sols=${cal_sol} -D output=${DATA}/${OBSID}_ch${freq}-rfi_ds.out \
+	--strict -o ${DATA}/${OBSID}_ch${freq}-rfi_ds.sh
 
 echo "${OBSID} Submitting image job"
-sbatch ${DATA}/${OBSID}_ch${freq}-image_ds.sh
+sbatch ${DATA}/${OBSID}_ch${freq}-rfi_ds.sh

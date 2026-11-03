@@ -4,7 +4,7 @@ LOG=/software/projects/mwasci/awaszewski/phase_1/compression_log.sqlite
 module load giant-squid/2.3.0
 module load python/3.11.6
 
-sleep $(echo "scale=3; $RANDOM/32768*10" | bc)
+#sleep $(echo "scale=3; $RANDOM/32768*10" | bc)
 
 echo "${OBSID} ASVO"
 
@@ -21,8 +21,12 @@ python ../new_system/update_log.py -l ${LOG} -o ${OBSID} --stage ASVO --status P
 
 # Submit job on ASVO
 if giant-squid submit-conv ${OBSID} -w -d scratch \
-    -p avg_time_res=0.5,avg_freq_res=40,flag_edge_width=40,output=ms; then
+#if giant-squid submit-conv ${OBSID} -d scratch \
+    -p avg_time_res=0.5,avg_freq_res=160,flag_edge_width=160,no_rfi=true,output=ms; then
 	
+	# for no rfi flagging
+	# -p avg_time_res=0.5,avg_freq_res=160,flag_edge_width=160,no_rfi=true,output=ms; then	
+
 	#-p avg_time_res=4,avg_freq_res=40,flag_edge_width=40,output=ms; then
 	# for calibrator imaging ^
 

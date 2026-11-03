@@ -1,11 +1,12 @@
 #!/bin/bash -l
 #SBATCH --account=mwasci-gpu
 #SBATCH --partition=mwa-gpu
-#SBATCH --job-name={{obsid}}_{{freq}}_cal
+#SBATCH --job-name={{obsid}}_cal
 #SBATCH --output={{output}}
 #SBATCH --nodes=1
 #SBATCH --time=00:20:00
 #SBATCH --gres=gpu:2
+#SBATCH --ntasks=2
 #SBATCH --export=NONE
 
 set -euxEo pipefail
@@ -16,8 +17,8 @@ hyperdrive -V
 
 # Move into temp dir
 cd /tmp
-mkdir {{obsid}}_{{freq}}
-cd {{obsid}}_{{freq}}/
+mkdir {{obsid}}
+cd {{obsid}}/
 
 echo "DATE"
 date -Iseconds
@@ -41,8 +42,8 @@ export MWA_BEAM_FILE=/scratch/references/mwa/beam-models/mwa_full_embedded_eleme
 echo "DATE"
 date -Iseconds
 
-#rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}.ms/ ./{{obsid}}.ms
-rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch{{freq}}.ms/ ./{{obsid}}.ms
+rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}.ms/ ./{{obsid}}.ms
+#rsync -av /scratch/mwasci/asvo/{{asvo}}/{{obsid}}_ch{{freq}}.ms/ ./{{obsid}}.ms
 ms={{obsid}}.ms
 
 hyperdrive di-calibrate -d ${ms} {{obsid}}.metafits \
@@ -50,20 +51,22 @@ hyperdrive di-calibrate -d ${ms} {{obsid}}.metafits \
 	--num-sources {{sources}} \
 	--uvw-min {{uvwmin}} \
 	--uvw-max {{uvwmax}} \
-	-o {{obsid}}_ch{{freq}}_sols.fits
+	-o {{obsid}}_sols.fits
+#	-o {{obsid}}_ch{{freq}}_sols.fits
 
-hyperdrive plot-solutions {{obsid}}_ch{{freq}}_sols.fits
+hyperdrive plot-solutions {{obsid}}_sols.fits
+#hyperdrive plot-solutions {{obsid}}_ch{{freq}}_sols.fits
 
 # separate script that extracts the frequency channels required
 # then convert into bin
 # then aocal interp up to 160kHz? 
 
 # Transfer data back to scratch
-rsync -av {{obsid}}_ch{{freq}}_sols.fits \
+rsync -av {{obsid}}*_sols.fits \
 	{{obsid}}*.png \
 	{{obsid}}.metafits \
 	{{pipeline}}/{{obsid}}/
 
 cd ../
-rm -r {{obsid}}_{{freq}}/
+rm -r {{obsid}}/
 

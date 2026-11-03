@@ -15,9 +15,9 @@ fi
 module load singularity/4.1.0-slurm
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 
-if [ ! -s ${DATA}/sun_model_${OBSID}.yaml ]; then
+if [ ! -s ${DATA}/sun_model_${OBSID}_${FREQ}.yaml ]; then
 	echo "${OBSID} Generating solar model"
-	singularity exec -B $PWD ${container} python3 generate_sun_model.py -d ${DATA} -o ${OBSID}
+	singularity exec -B $PWD ${container} python3 generate_sun_model.py -d ${DATA} -o ${OBSID} -f ${FREQ}
 fi
 
 # GET ASVO DATA
@@ -28,9 +28,9 @@ ASVOID=$(python /software/projects/mwasci/awaszewski/new_system/read_log.py -l $
 echo "${OBSID} Calibration"
 
 singularity exec -B $PWD ${container} jinja2 calibrate-template_self.sh pipeline-info.yaml --format=yaml \
-	-D obsid=${OBSID} -D asvo=${ASVOID} -D output=${DATA}/${OBSID}_ch${FREQ}-calibrate.out -D freq=${FREQ} \
-	--strict -o ${DATA}/${OBSID}_${FREQ}-calibrate.sh
+	-D obsid=${OBSID} -D asvo=${ASVOID} -D output=${DATA}/${OBSID}-${FREQ}-calibrate.out -D freq=${FREQ} \
+	--strict -o ${DATA}/${OBSID}-${FREQ}-calibrate.sh
 
-sbatch ${DATA}/${OBSID}_${FREQ}-calibrate.sh
+sbatch ${DATA}/${OBSID}-${FREQ}-calibrate.sh
 
 # would ideally then do fit temp straight away but that would involve the data base and i don't want to do that right now
