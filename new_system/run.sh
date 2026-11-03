@@ -1,5 +1,5 @@
 module load python/3.11.6
-module load py-numpy/1.25.2
+module load py-numpy/2.1.2
 module load py-astropy/4.2.1
 
 set -eE
@@ -147,12 +147,12 @@ if [ ! -s ${metafits} ]; then
 fi
 
 module load singularity/4.3.5-slurm
-module unload python/3.11.6 py-numpy/1.25.2 py-astropy/4.2.1
+module unload python/3.11.6 py-numpy/2.1.2 py-astropy/4.2.1
 
 container="/software/projects/mwasci/awaszewski/ips_post.img"
 singularity exec -B $PWD ${container} python /software/projects/mwasci/awaszewski/quality_scripts/calc_quality.py -o ${OBSID} -p ${DATA} -l ${SOFTWARE}/${LOG} -s ${SOFTWARE}
 
-module load python/3.11.6 py-numpy/1.25.2 py-astropy/4.2.1 
+module load python/3.11.6 py-numpy/2.1.2 py-astropy/4.2.1 
 
 frac_bad=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 2 | awk '{print $2}')
 resid=$(python read_log.py -l ${LOG} -o ${OBSID} --quality | cut -d "|" -f 3 | awk '{print $2}')
